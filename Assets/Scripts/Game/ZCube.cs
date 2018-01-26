@@ -24,13 +24,18 @@ namespace Game
 
         private void Update()
         {
-            _properties.SetColor("_Color", Color.Lerp(Color.black, new Color(0.71f, 0.71f, 0.71f), transform.localScale.y / MaxHeight - 1f / MaxHeight));
+            _properties.SetColor("_Color", GetCubeColor() * Color.Lerp(Color.black, new Color(0.71f, 0.71f, 0.71f), (transform.localScale.y - 1f) / (MaxHeight - 1f)));
             _rend.SetPropertyBlock(_properties);
         }
+
+        public Color GetCubeColor()
+        {
+            return Type == ZCubeType.Node ? Color.blue : Color.gray;
+        }
+
         public void SetCubeType()
         {
             Type = Random.Range(0,100) < 3 ? ZCubeType.Node : ZCubeType.Basic;
-            GetComponent<Renderer>().material.color = Type == ZCubeType.Node ? Color.blue : Color.gray;
         }
     }
 }
