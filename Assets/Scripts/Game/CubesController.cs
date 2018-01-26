@@ -6,7 +6,7 @@ namespace Game
     public class CubesController : MonoBehaviour
     {
         public GameObject CubePrefab;
-
+        private const int WaveRadius = 40;
         private List<ZCube> _cubes;
         private float _timer;
 
@@ -18,12 +18,13 @@ namespace Game
         public void Tile()
         {
             _cubes = new List<ZCube>();
-            for (int x = 0; x < 40; x++)
+            for (int x = 0; x < WaveRadius; x++)
             {
-                for (int y = 0; y < 40; y++)
+                for (int y = 0; y < WaveRadius; y++)
                 {
                     var cube = Instantiate(CubePrefab, new Vector3(x - 40 / 2f, 0f, y - 40 / 2f) * 1.01f, Quaternion.identity).GetComponent<ZCube>();
                     _cubes.Add(cube);
+                    cube.SetCubeType();
                 }
             }
         }
