@@ -1,6 +1,8 @@
-﻿namespace Game
+﻿using UnityEngine;
+
+namespace Game
 {
-    public class ZCube
+    public class ZCube : MonoBehaviour
     {
 
     }
