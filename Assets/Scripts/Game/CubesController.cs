@@ -22,7 +22,7 @@ namespace Game
             {
                 for (int y = 0; y < WaveRadius; y++)
                 {
-                    var cube = Instantiate(CubePrefab, new Vector3(x - 40 / 2f, 0f, y - 40 / 2f) * 1.01f, Quaternion.identity).GetComponent<ZCube>();
+                    var cube = Instantiate(CubePrefab, new Vector3(x - 40 / 2f, 0f, y - 40 / 2f) * 1.1f, Quaternion.identity).GetComponent<ZCube>();
                     _cubes.Add(cube);
                     cube.SetCubeType();
                 }
@@ -39,7 +39,7 @@ namespace Game
             foreach (var cube in _cubes)
             {
                 var scale = cube.transform.localScale;
-                scale.y = CalculateHeight(Vector3.Distance(Vector3.zero, cube.transform.position), _timer, 3f, 1f, 1f, 10f);
+                scale.y = CalculateHeight(Vector3.Distance(Vector3.zero, cube.transform.position), _timer, 3f, 1f, 1f, ZCube.MaxHeight);
                 cube.transform.localScale = scale;
             }
         }
