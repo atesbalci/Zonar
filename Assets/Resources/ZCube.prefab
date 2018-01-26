@@ -22,6 +22,7 @@ GameObject:
   - component: {fileID: 33875426071133972}
   - component: {fileID: 65887426080544034}
   - component: {fileID: 23210496482455144}
+  - component: {fileID: 114094357563762414}
   m_Layer: 0
   m_Name: ZCube
   m_TagString: Untagged
@@ -56,7 +57,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: c42f968e94870ec4688cb554f34eb40c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -95,3 +96,14 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &114094357563762414
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1872571533746832}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4fc7f53c9f8a4029882f914c2845536d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
