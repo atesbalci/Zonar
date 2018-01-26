@@ -13,7 +13,7 @@ namespace Game
 
         void Awake()
         {
-            _tileHelper.GenerateTiles(250); //250 for some reason
+            _tileHelper.GenerateTiles(25 * 25); //250 for some reason
         }
 
         void Start()
@@ -27,6 +27,11 @@ namespace Game
             //    }
 
             //});
+        }
+
+        public ZCube FetchCube()
+        {
+            return _tileHelper.FetchCube();
         }
     }
 
