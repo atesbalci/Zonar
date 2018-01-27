@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Game
 {
-    class Player : MonoBehaviour
+    public class Player : MonoBehaviour
     {
         private Vector3 _camOffset;
 
@@ -12,6 +12,7 @@ namespace Game
         {
             DOTween.Init();
             _camOffset = Camera.main.transform.position;
+            GameCore.Instance.Player = this;
         }
 
         void Update()
@@ -29,10 +30,6 @@ namespace Game
                         transform.position = cube.transform.position;//Move player
                         Camera.main.transform.DOMove(transform.position + _camOffset, GameCore.TransmissionDuration).SetEase(Ease.InOutSine);
                         GameCore.Instance.State = GameState.Transmitting;
-                        MessageBroker.Default.Publish(new TransmissionStartedEvent()
-                        {
-                            Position = transform.position
-                        });
                     }
                 }
             }

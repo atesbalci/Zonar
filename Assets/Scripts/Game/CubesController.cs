@@ -13,26 +13,38 @@ namespace Game
         private const int WaveRadius = 41;
         private List<ZCube> _cubes;
         private float _timer;
+        private Tweener[] _tweeners;
 
         private void Start()
         {
             Tile();
             Vector3 pos = Vector3.zero;
-            MessageBroker.Default.Receive<TransmissionStartedEvent>().Subscribe(ev =>
+            MessageBroker.Default.Receive<GameStateChangeEvent>().Subscribe(ev =>
             {
-                pos = ev.Position;
-                //TODO Bind this to transition complete
-                var playerDistance = _cubeParent.transform.InverseTransformPoint(ev.Position).magnitude * 2f;
-                foreach (var cube in _cubes)
+                if (ev.State == GameState.AwaitingTransmission)
                 {
-                    var y = cube.transform.localScale.y;
-                    var dist = Vector3.Distance(cube.transform.position, ev.Position);
-                    cube.transform.DOScaleY(dist < 1.5f && y > ZCube.MaxHeight / 2f ? ZCube.MaxHeight : 1f, Mathf.Min(GameCore.TransmissionDuration - 0.1f, GameCore.TransmissionDuration * (1f - dist / playerDistance))).SetEase(Ease.InOutSine);
+                    SetUserCube(GameCore.Instance.Player.transform.position);
+                    foreach (var tweener in _tweeners)
+                    {
+                        tweener.Kill(true);
+                    }
+                    Update();
                 }
-            });
-            MessageBroker.Default.Receive<TransmissionCompletedEvent>().Subscribe(ev =>
-            {
-                SetUserCube(pos);
+                else if (ev.State == GameState.Transmitting)
+                {
+                    pos = GameCore.Instance.Player.transform.position;
+                    var playerDistance = _cubeParent.transform.InverseTransformPoint(pos).magnitude * 2f;
+                    _tweeners = new Tweener[_cubes.Count];
+                    for (var i = 0; i < _cubes.Count; i++)
+                    {
+                        var cube = _cubes[i];
+                        var y = cube.transform.localScale.y;
+                        var dist = Vector3.Distance(cube.transform.position, pos);
+                        _tweeners[i] = cube.transform.DOScaleY(dist < 1.5f ? ZCube.MaxHeight : 1f,
+                            Mathf.Min(GameCore.TransmissionDuration - 0.1f,
+                                GameCore.TransmissionDuration * (1f - dist / playerDistance))).SetEase(Ease.InOutSine);
+                    }
+                }
             });
         }
 
@@ -100,10 +112,5 @@ namespace Game
                 zCube.SetCubeType();
             }
         }
-    }
-
-    public class TransmissionStartedEvent
-    {
-        public Vector3 Position { get; set; }
     }
 }
