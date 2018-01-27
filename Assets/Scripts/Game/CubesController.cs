@@ -104,7 +104,7 @@ namespace Game
                 {
                     cube.transform.localScale = new Vector3(1f, ZCube.MaxHeight, 1f);
                 }
-                cube.RefreshColor();
+                cube.RefreshColor(Mathf.PerlinNoise(cube.transform.localPosition.x + Time.time, cube.transform.localPosition.z + Time.time));
             }
         }
 

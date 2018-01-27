@@ -16,6 +16,8 @@ namespace Game
     public class ZCube : MonoBehaviour
     {
         public const float MaxHeight = 10f;
+        public static readonly Color IdleColor = new Color(0.07f, 0.07f, 0.07f);
+
         public ZCubeType Type;
 
         private Renderer _rend;
@@ -27,9 +29,10 @@ namespace Game
             _properties = new MaterialPropertyBlock();
         }
 
-        public void RefreshColor()
+        public void RefreshColor(float noiseSeed)
         {
-            _properties.SetColor("_Color", GetCubeColor() * Color.Lerp(Color.black, new Color(0.71f, 0.71f, 0.71f), (transform.localScale.y - 1f) / (MaxHeight - 1f)));
+            noiseSeed -= 0.5f;
+            _properties.SetColor("_Color",  Color.Lerp(IdleColor + noiseSeed * new Color(0.03f, 0.03f, 0.03f), GetCubeColor() * new Color(0.71f, 0.71f, 0.71f), (transform.localScale.y - 1f) / (MaxHeight - 1f)));
             _rend.SetPropertyBlock(_properties);
         }
 
