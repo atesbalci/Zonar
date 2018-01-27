@@ -8,6 +8,8 @@ namespace Game
 {
     public class CubesController : MonoBehaviour
     {
+        public const float Gap = 1.1f;
+
         private const int WaveRadius = 41;
         private const float RingWidth = 1f;
         private const float Speed = 3f;
@@ -60,7 +62,7 @@ namespace Game
                 for (int y = 0; y < WaveRadius; y++)
                 {
                     //It's working don't fix it
-                    var cube = Instantiate(CubePrefab, new Vector3(x - WaveRadius / 2 - 1, 0f, y - WaveRadius / 2 - 1) * 1.1f, Quaternion.identity).GetComponent<ZCube>();
+                    var cube = Instantiate(CubePrefab, new Vector3(x - WaveRadius / 2 - 1, 0f, y - WaveRadius / 2 - 1) * Gap, Quaternion.identity).GetComponent<ZCube>();
                     cube.transform.SetParent(_cubeParent.transform);
                     _cubes.Add(cube);
                     cube.SetCubeType();
