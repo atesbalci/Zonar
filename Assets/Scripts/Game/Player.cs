@@ -8,9 +8,9 @@ namespace Game
     public class Player : MonoBehaviour
     {
         private Vector3 _camOffset;
-        private int _consecutiveBoostCount;
+        public int ConsecutiveBoostCount { get; set; }
         private int _boostSteps;
-        private const int BoostLimit = 2;
+        private const int BoostLimit = 3;
         private bool _isBoostActive;
         public Vector3 GoalPosition;
         public ZCubeType CurrentCubeType = ZCubeType.Transmissive;
@@ -61,16 +61,16 @@ namespace Game
                         }
                         if (selectedCube.Type == ZCubeType.Boost) //Set boost count
                         {
-                            _consecutiveBoostCount++;
-                            Debug.Log("BoostCount " + _consecutiveBoostCount);
+                            ConsecutiveBoostCount++;
+                            Debug.Log("BoostCount " + ConsecutiveBoostCount);
                         }
                         else if(selectedCube.Type == ZCubeType.Transmissive)
                         {
-                            _consecutiveBoostCount = 0;
+                            ConsecutiveBoostCount = 0;
                             Debug.Log("Boost Cleared");
                         }
 
-                        if (_consecutiveBoostCount == BoostLimit)
+                        if (ConsecutiveBoostCount == BoostLimit)
                         {
                             _isBoostActive = true;
                             _boostSteps = 5; //TODO: change later
@@ -121,7 +121,7 @@ namespace Game
                 if (--_boostSteps == 0)
                 {
                     _isBoostActive = false;
-                    _consecutiveBoostCount = 0;
+                    ConsecutiveBoostCount = 0;
                     GameCore.TransmissionDuration = 0.75f;
                 }
             }
