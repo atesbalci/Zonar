@@ -35,9 +35,9 @@ namespace Game
                 if (value == GameState.Transmitting)
                 {
                     Observable.Timer(TimeSpan.FromSeconds(TransmissionDuration)).Subscribe(l =>
-                        {
-                            State = GameState.AwaitingTransmission;
-                        });
+                    {
+                        State = GameState.AwaitingTransmission;
+                    });
                 }
                 _state = value;
                 MessageBroker.Default.Publish(new GameStateChangeEvent { State = value });

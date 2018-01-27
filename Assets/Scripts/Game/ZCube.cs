@@ -66,6 +66,7 @@ namespace Game
                 if ((GameCore.Instance.Player.GoalPosition - transform.position).magnitude < 0.5f)
                 {
                     Type = ZCubeType.Goal;
+                    Debug.Log(transform.TransformPoint(Vector3.zero));
                 }
                 else
                 {

@@ -70,16 +70,17 @@ namespace Game
                 }
                 else if (ev.State == GameState.LevelCompleted)
                 {
+                    Update();
                     _tweeners = new Tweener[Cubes.Count];
                     for (var i = 0; i < Cubes.Count; i++)
                     {
                         var cube = Cubes[i];
-                        if (cube.Type == ZCubeType.Player)
-                        {
-                            continue;
-                        }
                         var dist = Vector3.Distance(cube.transform.position, pos);
-                        _tweeners[i] = cube.transform.DOScaleY(1f, GameCore.TransmissionDuration * dist / 5f).SetEase(Ease.InOutSine);
+                        //if (cube.Type == ZCubeType.Player || cube.Type == ZCubeType.Player)
+                        //{
+                        //    continue;
+                        //}
+                        _tweeners[i] = cube.transform.DOScaleY(1f, GameCore.TransmissionDuration * dist).SetEase(Ease.InOutSine);
                     }
                 }
             });
@@ -106,7 +107,7 @@ namespace Game
         private void Update()
         {
             var state = GameCore.Instance.State;
-            if (state == GameState.AwaitingTransmission)
+            if (state == GameState.AwaitingTransmission || state == GameState.LevelCompleted)
             {
                 if (_timer < 3.5f)
                 {
@@ -136,15 +137,16 @@ namespace Game
 
                     cube.transform.localScale = scale;
                 }
-                else if (cube.Type == ZCubeType.Goal)
+                if (cube.Type == ZCubeType.Player)
                 {
                     cube.transform.localScale = new Vector3(1f, ZCube.MaxHeight, 1f);
                 }
+
                 cube.RefreshColor(Mathf.PerlinNoise(cube.transform.localPosition.x + Time.time, cube.transform.localPosition.z + Time.time));
             }
 
             ZCube.IdleColor = Color.Lerp(ZCube.IdleColor,
-                state == GameState.AwaitingTransmission ? ZCube.DefaultIdleColor : Color.black, Time.deltaTime * 10f);
+                state == GameState.Transmitting ? Color.black : ZCube.DefaultIdleColor , Time.deltaTime * 10f);
         }
 
         private static float CalculateHeight(float distance, float time, float speed, float width, float min, float max)

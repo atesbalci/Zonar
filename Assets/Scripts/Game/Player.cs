@@ -22,7 +22,7 @@ namespace Game
             DOTween.Init();
             _camOffset = Camera.main.transform.position;
             GameCore.Instance.Player = this;
-            GoalPosition = new Vector3(Random.Range(100,150) + 0.5f, 0f, Random.Range(100, 150) + 0.5f);
+            GoalPosition = new Vector3(Random.Range(100,150) * CubesController.Gap, 0f, Random.Range(100, 150) * CubesController.Gap);
             Debug.Log(GoalPosition);
 
             MessageBroker.Default.Receive<GameStateChangeEvent>().Subscribe(ev =>
