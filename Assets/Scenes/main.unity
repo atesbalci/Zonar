@@ -321,8 +321,8 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 989222769}
-  - component: {fileID: 989222768}
   - component: {fileID: 989222767}
+  - component: {fileID: 989222770}
   m_Layer: 0
   m_Name: GameCore
   m_TagString: Untagged
@@ -343,17 +343,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Cubes: []
   CubePrefab: {fileID: 1872571533746832, guid: 502bae725911db945a12ceb6fac6760e, type: 2}
---- !u!114 &989222768
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 989222766}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ac22ab23e2057a04abaa518e09badd98, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &989222769
 Transform:
   m_ObjectHideFlags: 0
@@ -367,6 +356,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &989222770
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 989222766}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 868f52db601643ddac3f09d61d4f70ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  IdleCubePrefab: {fileID: 1554185389303348, guid: 898c0da4e8fce164499b430e48fc4381,
+    type: 2}
 --- !u!1 &1579578491
 GameObject:
   m_ObjectHideFlags: 0

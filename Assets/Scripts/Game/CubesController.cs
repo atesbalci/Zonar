@@ -106,6 +106,9 @@ namespace Game
                 }
                 cube.RefreshColor(Mathf.PerlinNoise(cube.transform.localPosition.x + Time.time, cube.transform.localPosition.z + Time.time));
             }
+
+            ZCube.IdleColor = Color.Lerp(ZCube.IdleColor,
+                state == GameState.AwaitingTransmission ? ZCube.DefaultIdleColor : Color.black, Time.deltaTime * 10f);
         }
 
         private static float CalculateHeight(float distance, float time, float speed, float width, float min, float max)

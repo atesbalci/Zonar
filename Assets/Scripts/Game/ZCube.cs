@@ -16,7 +16,8 @@ namespace Game
     public class ZCube : MonoBehaviour
     {
         public const float MaxHeight = 10f;
-        public static readonly Color IdleColor = new Color(0.07f, 0.07f, 0.07f);
+        public static readonly Color DefaultIdleColor = new Color(0.07f, 0.07f, 0.07f);
+        public static Color IdleColor = DefaultIdleColor;
 
         public ZCubeType Type;
 
