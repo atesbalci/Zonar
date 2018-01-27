@@ -33,8 +33,8 @@ namespace Game
             {
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-                var hits = Physics.SphereCastAll(ray, 3f, 100);
-                foreach (var raycastHit in hits.OrderBy(x => (ray.origin - x.transform.position).magnitude).ToList())
+                var hits = Physics.SphereCastAll(ray, 2f, 100);
+                foreach (var raycastHit in hits.Where(y=> y.transform.localScale.y > 5f).OrderBy(x => (ray.origin - x.transform.position).magnitude).ToList())
                 {
                     var cube = raycastHit.transform.GetComponent<ZCube>();
                     if (cube != null)
@@ -49,7 +49,7 @@ namespace Game
                             _consecutiveBoostCount++;
                             Debug.Log("BoostCount " + _consecutiveBoostCount);
                         }
-                        else
+                        else if(selectedCube.Type == ZCubeType.Transmissive)
                         {
                             _consecutiveBoostCount = 0;
                             Debug.Log("Boost Cleared");
