@@ -11,7 +11,7 @@ namespace Game
         public List<ZCube> Cubes;
         public const float Gap = 1.1f;
         public GameObject CubePrefab;
-        private const int WaveRadius = 41;
+        public const int WaveRadius = 61;
         private const float RingWidth = 1f;
         private const float Speed = 3f;
 
@@ -43,11 +43,43 @@ namespace Game
                     for (var i = 0; i < Cubes.Count; i++)
                     {
                         var cube = Cubes[i];
+                        if (cube.Type == ZCubeType.Goal)
+                        {
+                            continue;
+                        }
                         var y = cube.transform.localScale.y;
                         var dist = Vector3.Distance(cube.transform.position, pos);
                         _tweeners[i] = cube.transform.DOScaleY(dist < 1.5f ? ZCube.MaxHeight : 1f,
                             Mathf.Min(GameCore.TransmissionDuration - 0.1f,
                                 GameCore.TransmissionDuration * (1f - dist / playerDistance))).SetEase(Ease.InOutSine);
+                    }
+                }
+                else if(ev.State == GameState.GameOver)
+                {
+                    _tweeners = new Tweener[Cubes.Count];
+                    for (var i = 0; i < Cubes.Count; i++)
+                    {
+                        var cube = Cubes[i];
+                        //if (cube.Type == ZCubeType.Player)
+                        //{
+                        //    continue;
+                        //}
+                        var dist = Vector3.Distance(cube.transform.position, pos);
+                        _tweeners[i] = cube.transform.DOScaleY(1f, GameCore.TransmissionDuration * dist/5f).SetEase(Ease.InOutSine);
+                    }
+                }
+                else if (ev.State == GameState.LevelCompleted)
+                {
+                    _tweeners = new Tweener[Cubes.Count];
+                    for (var i = 0; i < Cubes.Count; i++)
+                    {
+                        var cube = Cubes[i];
+                        if (cube.Type == ZCubeType.Player)
+                        {
+                            continue;
+                        }
+                        var dist = Vector3.Distance(cube.transform.position, pos);
+                        _tweeners[i] = cube.transform.DOScaleY(1f, GameCore.TransmissionDuration * dist / 5f).SetEase(Ease.InOutSine);
                     }
                 }
             });
@@ -76,10 +108,14 @@ namespace Game
             var state = GameCore.Instance.State;
             if (state == GameState.AwaitingTransmission)
             {
-                _timer += Time.deltaTime;
-                if (_timer > 7f)
+                if (_timer < 3.5f)
                 {
-                    _timer -= 7f;
+                    _timer += Time.deltaTime;
+                    //_timer -= 3.5f;
+                }
+                else
+                {
+                    GameCore.Instance.State = GameState.GameOver;
                 }
             }
 

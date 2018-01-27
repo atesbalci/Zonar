@@ -11,7 +11,9 @@ namespace Game
     public enum GameState
     {
         AwaitingTransmission,
-        Transmitting
+        Transmitting,
+        GameOver,
+        LevelCompleted,
     }
 
     public class GameCore

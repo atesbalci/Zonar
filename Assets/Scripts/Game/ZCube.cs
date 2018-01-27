@@ -39,13 +39,16 @@ namespace Game
 
         public Color GetCubeColor()
         {
-            switch (Type)
+            var t = Type;
+            if (Type == ZCubeType.Player) //bad practice 
+            {
+                t = GameCore.Instance.Player.CurrentCubeType;
+            }
+            switch (t)
             {
                 case ZCubeType.Basic:
                 return Color.gray;
                 case ZCubeType.Transmissive:
-                return Color.blue;
-                case ZCubeType.Player:
                 return Color.blue;
                 case ZCubeType.Boost:
                 return Color.magenta;
@@ -60,7 +63,7 @@ namespace Game
         {
             if (Type != ZCubeType.Player)
             {
-                if ((GameCore.Instance.Player.GoalPosition - transform.position).magnitude < 0.6f)
+                if ((GameCore.Instance.Player.GoalPosition - transform.position).magnitude < 0.5f)
                 {
                     Type = ZCubeType.Goal;
                 }

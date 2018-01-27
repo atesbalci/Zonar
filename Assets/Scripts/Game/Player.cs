@@ -13,14 +13,29 @@ namespace Game
         private const int BoostLimit = 2;
         private bool _isBoostActive;
         public Vector3 GoalPosition;
+        public ZCubeType CurrentCubeType;
+        public ZCubeType NextCubeType;
+
 
         private void Start()
         {
             DOTween.Init();
             _camOffset = Camera.main.transform.position;
             GameCore.Instance.Player = this;
-            GoalPosition = new Vector3(Random.Range(200,250), 0f, Random.Range(200, 250));
+            GoalPosition = new Vector3(Random.Range(100,150) + 0.5f, 0f, Random.Range(100, 150) + 0.5f);
             Debug.Log(GoalPosition);
+
+            MessageBroker.Default.Receive<GameStateChangeEvent>().Subscribe(ev =>
+            {
+                if (ev.State == GameState.AwaitingTransmission)
+                {
+                    CurrentCubeType = NextCubeType;
+                    if (CurrentCubeType == ZCubeType.Goal)
+                    {
+                        GameCore.Instance.State = GameState.LevelCompleted;
+                    }
+                }
+            });
         }
 
         void Update()
@@ -29,7 +44,7 @@ namespace Game
             {
                 BoostMove();
             }
-            else if (Input.GetMouseButtonDown(0))
+            else if (Input.GetMouseButtonDown(0) && GameCore.Instance.State != GameState.GameOver)
             {
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
@@ -75,6 +90,7 @@ namespace Game
                 transform.position = cube.transform.position;//Move player
                 Camera.main.transform.DOMove(transform.position + _camOffset, GameCore.TransmissionDuration);
                 GameCore.Instance.State = GameState.Transmitting;
+                NextCubeType = cube.Type;
                 if (cube.Type == ZCubeType.Goal)
                 {
                     Debug.Log("Yeeeey");
