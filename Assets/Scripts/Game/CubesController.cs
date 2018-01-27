@@ -58,6 +58,7 @@ namespace Game
                     scale.y = CalculateHeight(Vector3.Distance(Vector3.zero, cube.transform.position), _timer, 3f, 1f, 1f, ZCube.MaxHeight);
                 }
                 cube.transform.localScale = scale;
+                cube.RefreshColor();
             }
         }
 

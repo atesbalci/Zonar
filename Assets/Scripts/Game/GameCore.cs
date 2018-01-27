@@ -1,69 +1,41 @@
 ﻿using System;
-using System.Collections.Generic;
 using UniRx;
-using UnityEngine;
-using Object = UnityEngine.Object;
-using Random = UnityEngine.Random;
 
 namespace Game
 {
-    public class GameCore : MonoBehaviour
+    public enum GameState
     {
-        private TileHelper _tileHelper = new TileHelper();
-
-        void Awake()
-        {
-            //_tileHelper.GenerateTiles(25 * 25); //250 for some reason
-        }
-
-        void Start()
-        {
-            //Observable.Timer(TimeSpan.FromSeconds(5)).Subscribe(l =>
-            //{
-            //    for (int i = 0; i < 500; i++)
-            //    {
-            //        var x = _tileHelper.FetchCube();
-            //        x.transform.position = new Vector3(Random.Range(-10f,10f), Random.Range(-10f, 10f), Random.Range(-10f, 10f));
-            //    }
-
-            //});
-        }
-
-        public ZCube FetchCube()
-        {
-            return _tileHelper.FetchCube();
-        }
+        AwaitingTransmission,
+        Transmitting
     }
 
-    public class TileHelper
+    public class GameCore
     {
-        private List<ZCube> _cubes = new List<ZCube>();
-        private int _current;
+        public static GameCore Instance { get { return _instance ?? (_instance = new GameCore()); } }
+        public const float TransmissionDuration = 2f;
 
-        public void GenerateTiles(int count)
+        public GameState State
         {
-            var parent = new GameObject("ZCubes");
-            for (int i = 0; i < count; i++)
+            get { return _state; }
+            set
             {
-                var prefab = Object.Instantiate(Resources.Load("ZCube")) as GameObject;
-                if (prefab != null)
+                if (State == GameState.Transmitting)
                 {
-                    prefab.transform.SetParent(parent.transform);
-                    var zcube = prefab.AddComponent<ZCube>();
-                    _cubes.Add(zcube);
+                    Observable.Timer(TimeSpan.FromSeconds(TransmissionDuration)).Subscribe(l =>
+                        {
+                            State = GameState.AwaitingTransmission;
+                        });
                 }
+                _state = value;
             }
         }
 
-        public ZCube FetchCube()
+        private static GameCore _instance;
+        private GameState _state;
+
+        public GameCore()
         {
-            var cube = _cubes[_current];
-            _current++;
-            if (_current == _cubes.Count)
-            {
-                _current = 0;
-            }
-            return cube;
+            State = GameState.AwaitingTransmission;
         }
     }
 }

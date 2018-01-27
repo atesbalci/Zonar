@@ -23,7 +23,7 @@ namespace Game
             _properties = new MaterialPropertyBlock();
         }
 
-        private void Update()
+        public void RefreshColor()
         {
             _properties.SetColor("_Color", GetCubeColor() * Color.Lerp(Color.black, new Color(0.71f, 0.71f, 0.71f), (transform.localScale.y - 1f) / (MaxHeight - 1f)));
             _rend.SetPropertyBlock(_properties);
