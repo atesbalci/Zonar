@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using UniRx;
+using UnityEngine;
 
 namespace Game
 {
@@ -16,7 +17,11 @@ namespace Game
                     var cube = hit.transform.GetComponent<ZCube>();
                     if (cube != null && cube.Type == ZCubeType.Node && cube.transform.localScale.y>8f) //NodeSelect Logic here
                     {
-                        transform.position = cube.transform.position;
+                        transform.position = cube.transform.position;//Move player
+                        MessageBroker.Default.Publish(new SetUserCubeEvent()
+                        {
+                            Cube = cube
+                        }); 
                     }
                 }
             }

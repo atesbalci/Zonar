@@ -6,6 +6,7 @@ namespace Game
     {
         Basic,
         Node,
+        Player,
     }
 
     public class ZCube : MonoBehaviour
@@ -30,12 +31,15 @@ namespace Game
 
         public Color GetCubeColor()
         {
-            return Type == ZCubeType.Node ? Color.blue : Color.gray;
+            return Type == ZCubeType.Node || Type == ZCubeType.Player ? Color.blue : Color.gray;
         }
 
         public void SetCubeType()
         {
-            Type = Random.Range(0,100) < 3 ? ZCubeType.Node : ZCubeType.Basic;
+            if (Type != ZCubeType.Player)
+            {
+                Type = Random.Range(0,100) < 3 ? ZCubeType.Node : ZCubeType.Basic;
+            }
         }
     }
 }
