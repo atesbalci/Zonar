@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using DG.Tweening;
 using UniRx;
 using UnityEngine;
 
@@ -15,11 +17,23 @@ namespace Game
         private void Start()
         {
             Tile();
-            MessageBroker.Default.Receive<SetUserCubeEvent>().Subscribe(ev =>
+            Vector3 pos = Vector3.zero;
+            MessageBroker.Default.Receive<TransmissionStartedEvent>().Subscribe(ev =>
             {
-                SetUserCube(ev.Cube);
+                pos = ev.Position;
+                //TODO Bind this to transition complete
+                var playerDistance = _cubeParent.transform.InverseTransformPoint(ev.Position).magnitude * 2f;
+                foreach (var cube in _cubes)
+                {
+                    var y = cube.transform.localScale.y;
+                    var dist = Vector3.Distance(cube.transform.position, ev.Position);
+                    cube.transform.DOScaleY(dist < 1.5f && y > ZCube.MaxHeight / 2f ? ZCube.MaxHeight : 1f, Mathf.Min(GameCore.TransmissionDuration - 0.1f, GameCore.TransmissionDuration * (1f - dist / playerDistance))).SetEase(Ease.InOutSine);
+                }
             });
-
+            MessageBroker.Default.Receive<TransmissionCompletedEvent>().Subscribe(ev =>
+            {
+                SetUserCube(pos);
+            });
         }
 
         public void Tile()
@@ -41,23 +55,33 @@ namespace Game
 
         private void Update()
         {
-            _timer += Time.deltaTime;
-            if (_timer > 7f)
+            var state = GameCore.Instance.State;
+            if (state == GameState.AwaitingTransmission)
             {
-                _timer -= 7f;
+                _timer += Time.deltaTime;
+                if (_timer > 7f)
+                {
+                    _timer -= 7f;
+                }
             }
+
             foreach (var cube in _cubes)
             {
-                var scale = cube.transform.localScale;
-                if (cube.Type == ZCubeType.Player)
+                if (state == GameState.AwaitingTransmission)
                 {
-                    scale = new Vector3(1f,ZCube.MaxHeight,1f);
+                    var scale = cube.transform.localScale;
+                    if (cube.Type == ZCubeType.Player)
+                    {
+                        scale = new Vector3(1f, ZCube.MaxHeight, 1f);
+                    }
+                    else
+                    {
+                        scale.y = CalculateHeight(Vector3.Distance(Vector3.zero, cube.transform.localPosition), _timer, 2f,
+                            1f, 1f, ZCube.MaxHeight);
+                    }
+
+                    cube.transform.localScale = scale;
                 }
-                else
-                {
-                    scale.y = CalculateHeight(Vector3.Distance(Vector3.zero, cube.transform.position), _timer, 3f, 1f, 1f, ZCube.MaxHeight);
-                }
-                cube.transform.localScale = scale;
                 cube.RefreshColor();
             }
         }
@@ -67,9 +91,10 @@ namespace Game
             return Mathf.Clamp(max - Mathf.Abs(Mathf.Max(0f, Mathf.Abs(distance - time * speed) - width) * (max - min)), min, max);
         }
 
-        public void SetUserCube(ZCube cube)
+        public void SetUserCube(Vector3 pos)
         {
-            _cubeParent.transform.position = cube.transform.position;
+            _cubeParent.transform.position = pos;
+            _timer = 0f;
             foreach (var zCube in _cubes) //set other cubes
             {
                 zCube.SetCubeType();
@@ -77,8 +102,8 @@ namespace Game
         }
     }
 
-    public class SetUserCubeEvent
+    public class TransmissionStartedEvent
     {
-        public ZCube Cube { get; set; }
+        public Vector3 Position { get; set; }
     }
 }

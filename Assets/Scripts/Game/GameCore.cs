@@ -3,6 +3,8 @@ using UniRx;
 
 namespace Game
 {
+    public class TransmissionCompletedEvent { }
+
     public enum GameState
     {
         AwaitingTransmission,
@@ -12,19 +14,23 @@ namespace Game
     public class GameCore
     {
         public static GameCore Instance { get { return _instance ?? (_instance = new GameCore()); } }
-        public const float TransmissionDuration = 2f;
+        public const float TransmissionDuration =2f;
 
         public GameState State
         {
             get { return _state; }
             set
             {
-                if (State == GameState.Transmitting)
+                if (value == GameState.Transmitting)
                 {
                     Observable.Timer(TimeSpan.FromSeconds(TransmissionDuration)).Subscribe(l =>
                         {
                             State = GameState.AwaitingTransmission;
                         });
+                }
+                else if (value == GameState.AwaitingTransmission && _state != GameState.AwaitingTransmission)
+                {
+                    MessageBroker.Default.Publish(new TransmissionCompletedEvent());
                 }
                 _state = value;
             }
