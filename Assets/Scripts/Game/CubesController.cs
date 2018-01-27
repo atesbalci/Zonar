@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using DG.Tweening;
 using UniRx;
 using UnityEngine;
@@ -11,9 +12,10 @@ namespace Game
         public List<ZCube> Cubes;
         public const float Gap = 1.1f;
         public GameObject CubePrefab;
-        public const int WaveRadius = 61;
+        public const int WaveRadius = 1011;
         private const float RingWidth = 1f;
         private const float Speed = 3f;
+        private const float ScreenBoundTolerance = 100f;
 
         private GameObject _cubeParent;
 
@@ -94,14 +96,21 @@ namespace Game
             {
                 for (int y = 0; y < WaveRadius; y++)
                 {
-                    //It's working don't fix it
-                    var cube = Instantiate(CubePrefab, new Vector3(x - WaveRadius / 2 - 1, 0f, y - WaveRadius / 2 - 1) * Gap, Quaternion.identity).GetComponent<ZCube>();
-                    cube.transform.SetParent(_cubeParent.transform);
-                    Cubes.Add(cube);
-                    cube.SetCubeType();
+                    var pos = new Vector3(x - WaveRadius / 2 - 1, 0f, y - WaveRadius / 2 - 1) * Gap;
+                    var scrPos = Camera.main.WorldToScreenPoint(pos);
+                    if (scrPos.x >= -ScreenBoundTolerance && scrPos.y >= -ScreenBoundTolerance &&
+                        scrPos.x < Screen.width + ScreenBoundTolerance &&
+                        scrPos.y < Screen.height + ScreenBoundTolerance)
+                    {
+                        var cube = Instantiate(CubePrefab, pos, Quaternion.identity).GetComponent<ZCube>();
+                        cube.transform.SetParent(_cubeParent.transform);
+                        Cubes.Add(cube);
+                        cube.SetCubeType();
+                    }
                 }
             }
-            Cubes[(WaveRadius/2+1) * WaveRadius + WaveRadius/2+1].Type = ZCubeType.Player;
+            Cubes.First(x => Mathf.Approximately(Vector3.Distance(x.transform.position, Vector3.zero), 0f)).Type = ZCubeType.Player;
+            Debug.Log(Cubes.Count);
         }
 
         private void Update()
