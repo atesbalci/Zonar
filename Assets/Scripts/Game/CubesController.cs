@@ -31,11 +31,14 @@ namespace Game
                 if (ev.State == GameState.AwaitingTransmission)
                 {
                     SetUserCube(GameCore.Instance.Player.transform.position);
-                    foreach (var tweener in _tweeners)
+                    if (_tweeners != null)
                     {
-                        tweener.Kill(true);
+                        foreach (var tweener in _tweeners)
+                        {
+                            tweener.Kill(true);
+                        }
+                        Update();
                     }
-                    Update();
                 }
                 else if (ev.State == GameState.Transmitting)
                 {
@@ -45,7 +48,7 @@ namespace Game
                     for (var i = 0; i < Cubes.Count; i++)
                     {
                         var cube = Cubes[i];
-                        if (cube.Type == ZCubeType.Goal)
+                        if (cube.Type == ZCubeType.Goal || cube.Type == ZCubeType.Player)
                         {
                             continue;
                         }
@@ -131,24 +134,27 @@ namespace Game
 
             foreach (var cube in Cubes)
             {
-                if (state == GameState.AwaitingTransmission)
+                if (GameCore.Instance.State != GameState.Menu)
                 {
-                    var scale = cube.transform.localScale;
-                    if (cube.Type == ZCubeType.Player || cube.Type == ZCubeType.Goal)
+                    if (state == GameState.AwaitingTransmission)
                     {
-                        scale = new Vector3(1f, ZCube.MaxHeight, 1f);
-                    }
-                    else
-                    {
-                        scale.y = CalculateHeight(cube.transform.localPosition.magnitude, _timer, Speed,
-                            RingWidth, 1f, ZCube.MaxHeight);
-                    }
+                        var scale = cube.transform.localScale;
+                        if (cube.Type == ZCubeType.Player || cube.Type == ZCubeType.Goal)
+                        {
+                            scale = new Vector3(1f, ZCube.MaxHeight, 1f);
+                        }
+                        else
+                        {
+                            scale.y = CalculateHeight(cube.transform.localPosition.magnitude, _timer, Speed,
+                                RingWidth, 1f, ZCube.MaxHeight);
+                        }
 
-                    cube.transform.localScale = scale;
-                }
-                if (cube.Type == ZCubeType.Player)
-                {
-                    cube.transform.localScale = new Vector3(1f, ZCube.MaxHeight, 1f);
+                        cube.transform.localScale = scale;
+                    }
+                    if (cube.Type == ZCubeType.Player)
+                    {
+                        cube.transform.localScale = new Vector3(1f, ZCube.MaxHeight, 1f);
+                    }
                 }
 
                 cube.RefreshColor(Mathf.PerlinNoise(cube.transform.localPosition.x + Time.time, cube.transform.localPosition.z + Time.time));

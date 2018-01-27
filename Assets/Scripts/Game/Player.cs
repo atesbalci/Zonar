@@ -13,7 +13,7 @@ namespace Game
         private const int BoostLimit = 2;
         private bool _isBoostActive;
         public Vector3 GoalPosition;
-        public ZCubeType CurrentCubeType;
+        public ZCubeType CurrentCubeType = ZCubeType.Transmissive;
         public ZCubeType NextCubeType;
 
 
@@ -48,7 +48,7 @@ namespace Game
             {
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-                var hits = Physics.SphereCastAll(ray, 2f, 100);
+                var hits = Physics.SphereCastAll(ray, 2f, 1000);
                 foreach (var raycastHit in hits.Where(y=> y.transform.localScale.y > 5f).OrderBy(x => (ray.origin - x.transform.position).magnitude).ToList())
                 {
                     var cube = raycastHit.transform.GetComponent<ZCube>();

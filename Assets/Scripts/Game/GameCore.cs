@@ -14,6 +14,7 @@ namespace Game
         Transmitting,
         GameOver,
         LevelCompleted,
+        Menu,
     }
 
     public class GameCore
@@ -49,7 +50,7 @@ namespace Game
 
         public GameCore()
         {
-            State = GameState.AwaitingTransmission;
+            State = GameState.Menu;
         }
     }
 }

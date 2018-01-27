@@ -1,4 +1,5 @@
-﻿using DG.Tweening;
+﻿using System;
+using DG.Tweening;
 using UniRx;
 using UnityEngine;
 
@@ -32,6 +33,20 @@ namespace Game
                         dur -= unitDur * -diff;
                     }
                     ZigZag(seq, move, dur);
+                }
+                else if (ev.State == GameState.LevelCompleted)
+                {
+                    Observable.Timer(TimeSpan.FromSeconds(1f)).Subscribe(l =>
+                    {
+                        transform.DOMoveY(150, 3f);
+                    });
+                }
+                else if (ev.State == GameState.GameOver)
+                {
+                    Observable.Timer(TimeSpan.FromSeconds(0.5f)).Subscribe(l =>
+                    {
+                        transform.DOMoveY(-150, 1f);
+                    });
                 }
             });
         }
