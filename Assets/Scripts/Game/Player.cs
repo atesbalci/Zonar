@@ -49,7 +49,29 @@ namespace Game
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
                 var hits = Physics.SphereCastAll(ray, 2f, 1000);
-                foreach (var raycastHit in hits.Where(y=> y.transform.localScale.y > 5f).OrderBy(x => (ray.origin - x.transform.position).magnitude).ToList())
+                var selectedHits =
+                    hits.Where(y => y.transform.localScale.y > 5f)
+                        .OrderBy(x => (ray.origin - x.transform.position).magnitude)
+                        .ToList();
+                var boost = selectedHits.Where(x =>
+                {
+                    var c = x.transform.GetComponent<ZCube>();
+                    if (c != null && c.Type == ZCubeType.Boost)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                });
+
+                if (boost.Any())
+                {
+                    selectedHits = boost.ToList();
+                }
+
+                foreach (var raycastHit in selectedHits)
                 {
                     var cube = raycastHit.transform.GetComponent<ZCube>();
                     if (cube != null)
