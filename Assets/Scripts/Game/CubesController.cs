@@ -56,7 +56,8 @@ namespace Game
             {
                 for (int y = 0; y < WaveRadius; y++)
                 {
-                    var cube = Instantiate(CubePrefab, new Vector3(x - WaveRadius / 2f, 0f, y - WaveRadius / 2f) * 1.1f, Quaternion.identity).GetComponent<ZCube>();
+                    //It's working don't fix it
+                    var cube = Instantiate(CubePrefab, new Vector3(x - WaveRadius / 2 - 1, 0f, y - WaveRadius / 2 - 1) * 1.1f, Quaternion.identity).GetComponent<ZCube>();
                     cube.transform.SetParent(_cubeParent.transform);
                     _cubes.Add(cube);
                     cube.SetCubeType();
@@ -88,7 +89,7 @@ namespace Game
                     }
                     else
                     {
-                        scale.y = CalculateHeight(Vector3.Distance(Vector3.zero, cube.transform.localPosition), _timer, 2f,
+                        scale.y = CalculateHeight(cube.transform.localPosition.magnitude, _timer, 2f,
                             1f, 1f, ZCube.MaxHeight);
                     }
 
