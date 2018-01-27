@@ -9,6 +9,7 @@ namespace Game
     {
         private Vector3 _camOffset;
         private int _consecutiveBoostCount;
+        private int _boostSteps;
         private const int BoostLimit = 2;
         private bool _isBoostActive;
         private Vector3 _goalPosition;
@@ -52,7 +53,8 @@ namespace Game
                     if (_consecutiveBoostCount == BoostLimit)
                     {
                         _isBoostActive = true;
-                        GameCore.TransmissionDuration = 0.5f;
+                        _boostSteps = 5; //TODO: change later
+                        GameCore.TransmissionDuration = 0.4f;
                     }
                     NormalMove(cube);
                 }
@@ -89,10 +91,11 @@ namespace Game
                 }
                 NormalMove(transmissives[selectedCubeindex]);
 
-                if (--_consecutiveBoostCount == 0)
+                if (--_boostSteps == 0)
                 {
                     _isBoostActive = false;
-                    GameCore.TransmissionDuration = 1f;
+                    _consecutiveBoostCount = 0;
+                    GameCore.TransmissionDuration = 0.75f;
                 }
             }
         }

@@ -17,7 +17,7 @@ namespace Game
     public class GameCore
     {
         public static GameCore Instance { get { return _instance ?? (_instance = new GameCore()); } }
-        public static float TransmissionDuration = 2f;
+        public static float TransmissionDuration = 0.75f;
 
         public Player Player { get; set; }
 
