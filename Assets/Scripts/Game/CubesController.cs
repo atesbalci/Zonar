@@ -8,15 +8,15 @@ namespace Game
 {
     public class CubesController : MonoBehaviour
     {
+        public List<ZCube> Cubes;
         public const float Gap = 1.1f;
-
+        public GameObject CubePrefab;
         private const int WaveRadius = 41;
         private const float RingWidth = 1f;
         private const float Speed = 3f;
 
-        public GameObject CubePrefab;
         private GameObject _cubeParent;
-        private List<ZCube> _cubes;
+
         private float _timer;
         private Tweener[] _tweeners;
 
@@ -39,10 +39,10 @@ namespace Game
                 {
                     pos = GameCore.Instance.Player.transform.position;
                     var playerDistance = _cubeParent.transform.InverseTransformPoint(pos).magnitude * 2f;
-                    _tweeners = new Tweener[_cubes.Count];
-                    for (var i = 0; i < _cubes.Count; i++)
+                    _tweeners = new Tweener[Cubes.Count];
+                    for (var i = 0; i < Cubes.Count; i++)
                     {
-                        var cube = _cubes[i];
+                        var cube = Cubes[i];
                         var y = cube.transform.localScale.y;
                         var dist = Vector3.Distance(cube.transform.position, pos);
                         _tweeners[i] = cube.transform.DOScaleY(dist < 1.5f ? ZCube.MaxHeight : 1f,
@@ -55,7 +55,7 @@ namespace Game
 
         public void Tile()
         {
-            _cubes = new List<ZCube>();
+            Cubes = new List<ZCube>();
             _cubeParent = new GameObject("Cubes");
             for (int x = 0; x < WaveRadius; x++)
             {
@@ -64,11 +64,11 @@ namespace Game
                     //It's working don't fix it
                     var cube = Instantiate(CubePrefab, new Vector3(x - WaveRadius / 2 - 1, 0f, y - WaveRadius / 2 - 1) * Gap, Quaternion.identity).GetComponent<ZCube>();
                     cube.transform.SetParent(_cubeParent.transform);
-                    _cubes.Add(cube);
+                    Cubes.Add(cube);
                     cube.SetCubeType();
                 }
             }
-            _cubes[(WaveRadius/2+1) * WaveRadius + WaveRadius/2+1].Type = ZCubeType.Player;
+            Cubes[(WaveRadius/2+1) * WaveRadius + WaveRadius/2+1].Type = ZCubeType.Player;
         }
 
         private void Update()
@@ -83,7 +83,7 @@ namespace Game
                 }
             }
 
-            foreach (var cube in _cubes)
+            foreach (var cube in Cubes)
             {
                 if (state == GameState.AwaitingTransmission)
                 {
@@ -113,7 +113,7 @@ namespace Game
         {
             _cubeParent.transform.position = pos;
             _timer = 0f;
-            foreach (var zCube in _cubes) //set other cubes
+            foreach (var zCube in Cubes) //set other cubes
             {
                 zCube.SetCubeType();
             }

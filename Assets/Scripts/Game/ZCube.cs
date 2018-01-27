@@ -1,12 +1,15 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Game
 {
     public enum ZCubeType
     {
         Basic,
-        Node,
+        Transmissive,
         Player,
+        Boost,
     }
 
     public class ZCube : MonoBehaviour
@@ -31,14 +34,38 @@ namespace Game
 
         public Color GetCubeColor()
         {
-            return Type == ZCubeType.Node || Type == ZCubeType.Player ? Color.blue : Color.gray;
+            switch (Type)
+            {
+                case ZCubeType.Basic:
+                return Color.gray;
+                case ZCubeType.Transmissive:
+                return Color.blue;
+                case ZCubeType.Player:
+                return Color.blue;
+                case ZCubeType.Boost:
+                return Color.magenta;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         public void SetCubeType()
         {
             if (Type != ZCubeType.Player)
             {
-                Type = Random.Range(0,100) < 3 ? ZCubeType.Node : ZCubeType.Basic;
+                var randy = Random.Range(0f, 100f);
+                if (randy < 1) // TODO: boost must be far from player 
+                {
+                    Type = ZCubeType.Boost;
+                }
+                else if (randy < 8)
+                {
+                    Type = ZCubeType.Transmissive;
+                }
+                else
+                {
+                    Type = ZCubeType.Basic;
+                }
             }
         }
     }
