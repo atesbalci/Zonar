@@ -41,13 +41,7 @@ namespace Game
                         transform.DOMoveY(150, 3f);
                     });
                 }
-                else if (ev.State == GameState.GameOver)
-                {
-                    Observable.Timer(TimeSpan.FromSeconds(0.5f)).Subscribe(l =>
-                    {
-                        transform.DOMoveY(-150, 1f);
-                    });
-                }
+                
             });
         }
 

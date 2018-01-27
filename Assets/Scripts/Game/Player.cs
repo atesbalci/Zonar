@@ -44,7 +44,7 @@ namespace Game
             {
                 BoostMove();
             }
-            else if (Input.GetMouseButtonDown(0) && GameCore.Instance.State != GameState.GameOver)
+            else if (Input.GetMouseButtonDown(0) && GameCore.Instance.State != GameState.GameOver && GameCore.Instance.State == GameState.AwaitingTransmission)
             {
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 

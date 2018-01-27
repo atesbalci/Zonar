@@ -1,4 +1,5 @@
 ﻿using DG.Tweening;
+using UniRx;
 using UnityEngine;
 
 namespace Game
@@ -7,12 +8,30 @@ namespace Game
     {
         public Renderer[] Renderers;
 
-        private void Start()
+        private void Awake()
         {
             foreach (var rend in Renderers)
             {
                 rend.transform.DOLocalRotate(new Vector3(0, 360, 0), 5f).SetRelative().SetEase(Ease.Linear).SetLoops(-1);
             }
+
+            MessageBroker.Default.Receive<GameStateChangeEvent>().Subscribe(ev =>
+            {
+                if (ev.State == GameState.Menu)
+                {
+                    foreach (var renderer1 in Renderers)
+                    {
+                        renderer1.enabled = false;
+                    }
+                }
+                else
+                {
+                    foreach (var renderer1 in Renderers)
+                    {
+                        renderer1.enabled = true;
+                    }
+                }
+            });
         }
 
         private void Update()

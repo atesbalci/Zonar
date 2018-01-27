@@ -32,7 +32,7 @@ namespace Game
 
         public void RefreshColor(float noiseSeed)
         {
-            noiseSeed -= 0.5f;
+            noiseSeed = Mathf.Round(noiseSeed*5) / 5 - 0.5f;
             _properties.SetColor("_Color",  Color.Lerp(IdleColor + noiseSeed * new Color(0.03f, 0.03f, 0.03f), GetCubeColor() * new Color(0.71f, 0.71f, 0.71f), (transform.localScale.y - 1f) / (MaxHeight - 1f)));
             _rend.SetPropertyBlock(_properties);
         }
