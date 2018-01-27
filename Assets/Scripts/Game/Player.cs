@@ -32,29 +32,38 @@ namespace Game
             else if (Input.GetMouseButtonDown(0))
             {
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                RaycastHit hit;
 
-                if (Physics.Raycast(ray, out hit, 100))
+                var hits = Physics.SphereCastAll(ray, 3f, 100);
+                foreach (var raycastHit in hits.OrderBy(x => (ray.origin - x.transform.position).magnitude).ToList())
                 {
-                    var cube = hit.transform.GetComponent<ZCube>();
-                    if (cube.Type == ZCubeType.Boost) //Set boost count
+                    var cube = raycastHit.transform.GetComponent<ZCube>();
+                    if (cube != null)
                     {
-                        _consecutiveBoostCount++;
-                        Debug.Log("BoostCount " + _consecutiveBoostCount);
-                    }
-                    else
-                    {
-                        _consecutiveBoostCount = 0;
-                        Debug.Log("Boost Cleared");
-                    }
+                        var selectedCube = cube;
+                        if (selectedCube.Type == ZCubeType.Basic)
+                        {
+                            continue;
+                        }
+                        if (selectedCube.Type == ZCubeType.Boost) //Set boost count
+                        {
+                            _consecutiveBoostCount++;
+                            Debug.Log("BoostCount " + _consecutiveBoostCount);
+                        }
+                        else
+                        {
+                            _consecutiveBoostCount = 0;
+                            Debug.Log("Boost Cleared");
+                        }
 
-                    if (_consecutiveBoostCount == BoostLimit)
-                    {
-                        _isBoostActive = true;
-                        _boostSteps = 5; //TODO: change later
-                        GameCore.TransmissionDuration = 0.4f;
+                        if (_consecutiveBoostCount == BoostLimit)
+                        {
+                            _isBoostActive = true;
+                            _boostSteps = 5; //TODO: change later
+                            GameCore.TransmissionDuration = 0.4f;
+                        }
+                        NormalMove(selectedCube);
+                        break;
                     }
-                    NormalMove(cube);
                 }
             }
         }
