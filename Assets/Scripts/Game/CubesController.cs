@@ -8,9 +8,12 @@ namespace Game
 {
     public class CubesController : MonoBehaviour
     {
+        private const int WaveRadius = 41;
+        private const float RingWidth = 1f;
+        private const float Speed = 3f;
+
         public GameObject CubePrefab;
         private GameObject _cubeParent;
-        private const int WaveRadius = 41;
         private List<ZCube> _cubes;
         private float _timer;
         private Tweener[] _tweeners;
@@ -89,8 +92,8 @@ namespace Game
                     }
                     else
                     {
-                        scale.y = CalculateHeight(cube.transform.localPosition.magnitude, _timer, 2f,
-                            1f, 1f, ZCube.MaxHeight);
+                        scale.y = CalculateHeight(cube.transform.localPosition.magnitude, _timer, Speed,
+                            RingWidth, 1f, ZCube.MaxHeight);
                     }
 
                     cube.transform.localScale = scale;
