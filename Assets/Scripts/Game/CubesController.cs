@@ -88,7 +88,7 @@ namespace Game
                 if (state == GameState.AwaitingTransmission)
                 {
                     var scale = cube.transform.localScale;
-                    if (cube.Type == ZCubeType.Player)
+                    if (cube.Type == ZCubeType.Player || cube.Type == ZCubeType.Goal)
                     {
                         scale = new Vector3(1f, ZCube.MaxHeight, 1f);
                     }
@@ -99,6 +99,10 @@ namespace Game
                     }
 
                     cube.transform.localScale = scale;
+                }
+                else if (cube.Type == ZCubeType.Goal)
+                {
+                    cube.transform.localScale = new Vector3(1f, ZCube.MaxHeight, 1f);
                 }
                 cube.RefreshColor();
             }

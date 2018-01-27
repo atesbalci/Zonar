@@ -12,17 +12,15 @@ namespace Game
         private int _boostSteps;
         private const int BoostLimit = 2;
         private bool _isBoostActive;
-        private Vector3 _goalPosition;
+        public Vector3 GoalPosition;
 
         private void Start()
         {
             DOTween.Init();
             _camOffset = Camera.main.transform.position;
             GameCore.Instance.Player = this;
-            _goalPosition = new Vector3(Random.Range(200,250), 10f, Random.Range(200, 250));
-            var goalCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            goalCube.transform.position = _goalPosition;
-            goalCube.GetComponent<Renderer>().material.color = Color.red;
+            GoalPosition = new Vector3(Random.Range(200,250), 0f, Random.Range(200, 250));
+            Debug.Log(GoalPosition);
         }
 
         void Update()
@@ -63,11 +61,15 @@ namespace Game
 
         private void NormalMove(ZCube cube)
         {
-            if ((cube.Type == ZCubeType.Transmissive || cube.Type == ZCubeType.Boost) && (cube.transform.localScale.y > 8f || _isBoostActive)) //NodeSelect Logic here
+            if ((cube.Type == ZCubeType.Transmissive || cube.Type == ZCubeType.Boost || cube.Type == ZCubeType.Goal) && (cube.transform.localScale.y > 8f || _isBoostActive)) //NodeSelect Logic here
             {
                 transform.position = cube.transform.position;//Move player
                 Camera.main.transform.DOMove(transform.position + _camOffset, GameCore.TransmissionDuration);
                 GameCore.Instance.State = GameState.Transmitting;
+                if (cube.Type == ZCubeType.Goal)
+                {
+                    Debug.Log("Yeeeey");
+                }
             }
         }
 
@@ -76,13 +78,13 @@ namespace Game
             var controller = FindObjectOfType<CubesController>();
             if (controller != null)
             {
-                var transmissives = controller.Cubes.Where(x => x.Type == ZCubeType.Transmissive).ToList();
+                var transmissives = controller.Cubes.Where(x => x.Type == ZCubeType.Transmissive || x.Type == ZCubeType.Goal).ToList();
                 var selectedCubeindex = 0;
                 var distance = float.MaxValue;
                 for (int i = 0; i < transmissives.Count; i++) //TODO: Distance for goal node
                 {
                     var zCube = transmissives[i];
-                    var dis = (zCube.transform.position - _goalPosition).magnitude;
+                    var dis = (zCube.transform.position - GoalPosition).magnitude;
                     if (dis < distance)
                     {
                         selectedCubeindex = i;

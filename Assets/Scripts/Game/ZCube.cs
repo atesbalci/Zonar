@@ -10,6 +10,7 @@ namespace Game
         Transmissive,
         Player,
         Boost,
+        Goal,
     }
 
     public class ZCube : MonoBehaviour
@@ -44,6 +45,8 @@ namespace Game
                 return Color.blue;
                 case ZCubeType.Boost:
                 return Color.magenta;
+                case ZCubeType.Goal:
+                return Color.red;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -53,18 +56,25 @@ namespace Game
         {
             if (Type != ZCubeType.Player)
             {
-                var randy = Random.Range(0f, 100f);
-                if (randy < 1) // TODO: boost must be far from player 
+                if ((GameCore.Instance.Player.GoalPosition - transform.position).magnitude < 0.6f)
                 {
-                    Type = ZCubeType.Boost;
-                }
-                else if (randy < 8)
-                {
-                    Type = ZCubeType.Transmissive;
+                    Type = ZCubeType.Goal;
                 }
                 else
                 {
-                    Type = ZCubeType.Basic;
+                    var randy = Random.Range(0f, 100f);
+                    if (randy < 1) // TODO: boost must be far from player 
+                    {
+                        Type = ZCubeType.Boost;
+                    }
+                    else if (randy < 8)
+                    {
+                        Type = ZCubeType.Transmissive;
+                    }
+                    else
+                    {
+                        Type = ZCubeType.Basic;
+                    }
                 }
             }
         }
