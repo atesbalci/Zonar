@@ -22,6 +22,7 @@ public class Menu : MonoBehaviour
     public Text TapToRestart;
 
     public BlurOptimized BlurOptimized;
+    public List<Tweener> Tweeners = new List<Tweener>(); 
 
     void Start()
     {
@@ -38,18 +39,43 @@ public class Menu : MonoBehaviour
 
     private void ActivateGameOverMenu()
     {
-        Header.transform.DOMoveX(Screen.width/2f, 0.3f);
-        Score.transform.DOMoveX(Screen.width/2f, 0.6f);
-        ScoreValue.transform.DOMoveX(Screen.width/2f, 0.7f);
-        HighScore.transform.DOMoveX(Screen.width/2f, 0.8f);
-        HighScoreValue.transform.DOMoveX(Screen.width/2f, 0.9f);
-        TapToRestart.transform.DOMoveX(Screen.width/2f, 1f);
+
+        foreach (var tweener in Tweeners)
+        {
+            tweener.Kill(true);
+        }
+        Tweeners.Clear();
+        Tweeners.Add(Header.transform.DOMoveX(Screen.width/2f, 0.3f));
+        Tweeners.Add(Score.transform.DOMoveX(Screen.width/2f, 0.6f));
+        Tweeners.Add(ScoreValue.transform.DOMoveX(Screen.width/2f, 0.7f));
+        Tweeners.Add(HighScore.transform.DOMoveX(Screen.width/2f, 0.8f));
+        Tweeners.Add(HighScoreValue.transform.DOMoveX(Screen.width/2f, 0.9f));
+        Tweeners.Add(TapToRestart.transform.DOMoveX(Screen.width/2f, 1f));
 
         if (BlurOptimized != null)
         {
             BlurOptimized.enabled = true;
         }
+    }
 
+    private void DeactivateGameOverMenu()
+    {
+        foreach (var tweener in Tweeners)
+        {
+            tweener.Kill(true);
+        }
+        Tweeners.Clear();
+        Tweeners.Add(Header.transform.DOMoveX(-1200f, 0.2f));
+        Tweeners.Add(Score.transform.DOMoveX(-1200f, 0.2f));
+        Tweeners.Add(ScoreValue.transform.DOMoveX(-1200f, 0.2f));
+        Tweeners.Add(HighScore.transform.DOMoveX(-1200f, 0.2f));
+        Tweeners.Add(HighScoreValue.transform.DOMoveX(-1200f, 0.2f));
+        Tweeners.Add(TapToRestart.transform.DOMoveX(-1200f, 0.2f));
+
+        if (BlurOptimized != null)
+        {
+            BlurOptimized.enabled = false;
+        }
     }
 
     void Update ()
@@ -61,6 +87,11 @@ public class Menu : MonoBehaviour
 	            GameCore.Instance.State = GameState.AwaitingTransmission;
                 MainMenu.SetActive(false);
 	        }
+	        else if (GameCore.Instance.State == GameState.GameOver)
+	        {
+	            DeactivateGameOverMenu();
+	            GameCore.Instance.Restart();
+            }
 	    }	
 	}
 }

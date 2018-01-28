@@ -7,7 +7,7 @@ namespace Game
 {
     public class Player : MonoBehaviour
     {
-        private Vector3 _camOffset;
+        public Vector3 CamOffset;
         public int ConsecutiveBoostCount { get; set; }
         private int _boostSteps;
         private const int BoostLimit = 3;
@@ -20,9 +20,9 @@ namespace Game
         private void Start()
         {
             DOTween.Init();
-            _camOffset = Camera.main.transform.position;
+            CamOffset = Camera.main.transform.position;
             GameCore.Instance.Player = this;
-            GoalPosition = new Vector3(Random.Range(100,150) * CubesController.Gap, 0f, Random.Range(100, 150) * CubesController.Gap);
+            CalculateGoalPosition();
             Debug.Log(GoalPosition);
 
             MessageBroker.Default.Receive<GameStateChangeEvent>().Subscribe(ev =>
@@ -36,6 +36,11 @@ namespace Game
                     }
                 }
             });
+        }
+
+        public void CalculateGoalPosition()
+        {
+            GoalPosition = new Vector3(Random.Range(100, 150) * CubesController.Gap, 0f, Random.Range(100, 150) * CubesController.Gap);
         }
 
         void Update()
@@ -110,7 +115,7 @@ namespace Game
             if ((cube.Type == ZCubeType.Transmissive || cube.Type == ZCubeType.Boost || cube.Type == ZCubeType.Goal) && (cube.transform.localScale.y > 8f || _isBoostActive)) //NodeSelect Logic here
             {
                 transform.position = cube.transform.position;//Move player
-                Camera.main.transform.DOMove(transform.position + _camOffset, GameCore.TransmissionDuration);
+                Camera.main.transform.DOMove(transform.position + CamOffset, GameCore.TransmissionDuration);
                 GameCore.Instance.State = GameState.Transmitting;
                 NextCubeType = cube.Type;
                 if (cube.Type == ZCubeType.Goal)

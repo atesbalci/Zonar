@@ -1,5 +1,7 @@
 ﻿using System;
 using UniRx;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Game
 {
@@ -51,6 +53,27 @@ namespace Game
         public GameCore()
         {
             State = GameState.Menu;
+        }
+
+        public void Restart()
+        {
+            //cubes,player,ui,endgame,timer,state,score,
+
+            var cubeController = Object.FindObjectOfType<CubesController>();
+            if (cubeController != null)
+            {
+                Player.transform.position = Vector3.zero;
+                Camera.main.transform.position = Player.CamOffset;
+                var trail = Object.FindObjectOfType<PlayerTrail>();
+                if (trail != null)
+                {
+                    trail.transform.position = new Vector3(0f,10f,0f);
+                }
+                cubeController.Timer = 0;
+                State = GameState.AwaitingTransmission;
+                Player.ConsecutiveBoostCount = 0;
+                Player.CalculateGoalPosition();
+            }
         }
     }
 }

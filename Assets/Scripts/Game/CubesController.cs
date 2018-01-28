@@ -19,7 +19,7 @@ namespace Game
 
         private GameObject _cubeParent;
 
-        private float _timer;
+        public float Timer;
         private Tweener[] _tweeners;
 
         private void Start()
@@ -121,10 +121,10 @@ namespace Game
             var state = GameCore.Instance.State;
             if (state == GameState.AwaitingTransmission || state == GameState.LevelCompleted)
             {
-                if (_timer < 3.5f)
+                if (Timer < 3.5f)
                 {
-                    _timer += Time.deltaTime;
-                    //_timer -= 3.5f;
+                    Timer += Time.deltaTime;
+                    //Timer -= 3.5f;
                 }
                 else
                 {
@@ -145,7 +145,7 @@ namespace Game
                         }
                         else
                         {
-                            scale.y = CalculateHeight(cube.transform.localPosition.magnitude, _timer, Speed,
+                            scale.y = CalculateHeight(cube.transform.localPosition.magnitude, Timer, Speed,
                                 RingWidth, 1f, ZCube.MaxHeight);
                         }
 
@@ -172,7 +172,7 @@ namespace Game
         public void SetUserCube(Vector3 pos)
         {
             _cubeParent.transform.position = pos;
-            _timer = 0f;
+            Timer = 0f;
             foreach (var zCube in Cubes) //set other cubes
             {
                 zCube.SetCubeType();
