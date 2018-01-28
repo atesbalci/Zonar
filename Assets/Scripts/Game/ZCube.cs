@@ -71,11 +71,11 @@ namespace Game
                 else
                 {
                     var randy = Random.Range(0f, 100f);
-                    if (randy < 1) // TODO: boost must be far from player 
+                    if (randy < Mathf.Clamp(2 - (GameCore.Instance.Player.Level - 1) * 0.5f ,0.5f, 100f)) // TODO: boost must be far from player 
                     {
                         Type = ZCubeType.Boost;
                     }
-                    else if (randy < 8)
+                    else if (randy < Mathf.Clamp(5 - (GameCore.Instance.Player.Level - 1) * 0.5f, 2f, 100f))
                     {
                         Type = ZCubeType.Transmissive;
                     }

@@ -103,8 +103,8 @@ namespace Game
                         if (ConsecutiveBoostCount == BoostLimit)
                         {
                             IsBoostActive = true;
-                            _boostSteps = 5; //TODO: change later
-                            GameCore.TransmissionDuration = 0.4f;
+                            _boostSteps = 3 + Level * 2; //TODO: change later
+                            GameCore.TransmissionDuration = Mathf.Clamp(0.45f - Level*0.05f, 0.2f, 1f);
                         }
                         NormalMove(selectedCube);
                         break;

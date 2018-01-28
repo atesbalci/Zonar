@@ -14,7 +14,7 @@ namespace Game
         public GameObject CubePrefab;
         public const int WaveRadius = 1011;
         private const float RingWidth = 1f;
-        private const float Speed = 3f;
+        private const float Speed = 2.5f;
         private const float ScreenBoundTolerance = 100f;
 
         private GameObject _cubeParent;
@@ -145,7 +145,7 @@ namespace Game
                         }
                         else
                         {
-                            scale.y = CalculateHeight(cube.transform.localPosition.magnitude, Timer, Speed,
+                            scale.y = CalculateHeight(cube.transform.localPosition.magnitude, Timer, Speed + GameCore.Instance.Player.Level * 0.25f,
                                 RingWidth, 1f, ZCube.MaxHeight);
                         }
 
