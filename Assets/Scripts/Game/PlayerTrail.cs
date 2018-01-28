@@ -32,7 +32,10 @@ namespace Game
                         seq.Append(transform.DOMoveZ(-diff * Mathf.Sign(move.z), unitDur * -diff).SetRelative());
                         dur -= unitDur * -diff;
                     }
-                    ZigZag(seq, move, dur);
+                    if (dur > 0.001f)
+                    {
+                        ZigZag(seq, move, dur);
+                    }
                 }
                 else if (ev.State == GameState.LevelCompleted)
                 {
