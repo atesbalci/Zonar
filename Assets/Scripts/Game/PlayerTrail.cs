@@ -8,6 +8,7 @@ namespace Game
     public class PlayerTrail : MonoBehaviour
     {
         private Tweener _levelCompletedTeweener;
+        private IDisposable _levelDisposable = null;
 
         private void Start()
         {
@@ -18,6 +19,11 @@ namespace Game
                     _levelCompletedTeweener.Kill(true);
                     _levelCompletedTeweener = null;
                 }
+                if (_levelDisposable != null)
+                {
+                    _levelDisposable.Dispose();
+                }
+
                 if (ev.State == GameState.Transmitting)
                 {
                     var move = GameCore.Instance.Player.transform.position - transform.position;
@@ -46,12 +52,11 @@ namespace Game
                 }
                 else if (ev.State == GameState.LevelCompleted)
                 {
-                    Observable.Timer(TimeSpan.FromSeconds(1f)).Subscribe(l =>
+                    _levelDisposable = Observable.Timer(TimeSpan.FromSeconds(1f)).Subscribe(l =>
                     {
                         _levelCompletedTeweener = transform.DOMoveY(150, 3f);
                     });
                 }
-                
             });
         }
 

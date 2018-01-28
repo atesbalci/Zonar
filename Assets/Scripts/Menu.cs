@@ -14,6 +14,9 @@ public class Menu : MonoBehaviour
     public GameObject GameOverMenu;
 
     [Header("GameOverMenu Stuff")]
+    public Text InGameScore;
+
+    [Header("GameOverMenu Stuff")]
     public Text Header;
     public Text Score;
     public Text ScoreValue;
@@ -47,10 +50,42 @@ public class Menu : MonoBehaviour
         BlurOptimized = FindObjectOfType<BlurOptimized>();
     }
 
+    void Update ()
+    {
+	    if (Input.GetMouseButton(0))
+	    {
+	        if (GameCore.Instance.State == GameState.Menu)
+	        {
+	            GameCore.Instance.State = GameState.AwaitingTransmission;
+                MainMenu.SetActive(false);
+	        }
+	        else if (GameCore.Instance.State == GameState.GameOver)
+	        {
+	            GameCore.Instance.Restart();
+	            DeactivateGameOverMenu();
+            }
+            else if (GameCore.Instance.State == GameState.LevelCompleted)
+            {
+	            GameCore.Instance.Restart(++GameCore.Instance.Player.Level);
+                DeactivateLevelCompleteMenu();
+            }
+        }
+        if (GameCore.Instance.State == GameState.LevelCompleted || GameCore.Instance.State == GameState.GameOver ||
+            GameCore.Instance.State == GameState.Menu)
+        {
+            InGameScore.text = "";
+        }
+        else
+        {
+            InGameScore.text = GameCore.Instance.Player.Score.ToString("D");
+        }
+    }
+
     private void ActivateLevelCompleteMenu()
     {
         KillTweeners();
-        LevelText.text = "Level " + (GameCore.Instance.Player.Level + 1) + " Completed";
+        LevelText.text = "Level " + (GameCore.Instance.Player.Level) + " Completed";
+        LevelScoreValue.text = GameCore.Instance.Player.Score.ToString("D");
         Tweeners.Add(LevelText.transform.DOMoveX(Screen.width / 2f, 0.3f));
         Tweeners.Add(LevelScore.transform.DOMoveX(Screen.width / 2f, 0.6f));
         Tweeners.Add(LevelScoreValue.transform.DOMoveX(Screen.width / 2f, 0.7f));
@@ -68,7 +103,29 @@ public class Menu : MonoBehaviour
 
     private void ActivateGameOverMenu()
     {
+        if (PlayerPrefs.HasKey("highscore")) //TODO: move highscore logic to somewhere else
+        {
+            var score = PlayerPrefs.GetInt("highscore");
+            if (GameCore.Instance.Player.Score > score)
+            {
+                HighScoreValue.text = GameCore.Instance.Player.Score.ToString("D");
+                PlayerPrefs.SetInt("highscore", GameCore.Instance.Player.Score);
+                PlayerPrefs.Save();
+            }
+            else
+            {
+                HighScoreValue.text = PlayerPrefs.GetInt("highscore").ToString("D");
+            }
+        }
+        else
+        {
+            HighScoreValue.text = GameCore.Instance.Player.Score.ToString("D");
+            PlayerPrefs.SetInt("highscore", GameCore.Instance.Player.Score);
+            PlayerPrefs.Save();
+        }
+
         KillTweeners();
+        ScoreValue.text = GameCore.Instance.Player.Score.ToString("D");
         Tweeners.Add(Header.transform.DOMoveX(Screen.width / 2f, 0.3f));
         Tweeners.Add(Score.transform.DOMoveX(Screen.width / 2f, 0.6f));
         Tweeners.Add(ScoreValue.transform.DOMoveX(Screen.width / 2f, 0.7f));
@@ -80,15 +137,6 @@ public class Menu : MonoBehaviour
         {
             BlurOptimized.enabled = true;
         }
-    }
-
-    private void KillTweeners()
-    {
-        foreach (var tweener in Tweeners)
-        {
-            tweener.Kill(true);
-        }
-        Tweeners.Clear();
     }
 
     private void DeactivateGameOverMenu()
@@ -107,26 +155,14 @@ public class Menu : MonoBehaviour
         }
     }
 
-    void Update ()
+    private void KillTweeners()
     {
-	    if (Input.GetMouseButton(0))
-	    {
-	        if (GameCore.Instance.State == GameState.Menu)
-	        {
-	            GameCore.Instance.State = GameState.AwaitingTransmission;
-                MainMenu.SetActive(false);
-	        }
-	        else if (GameCore.Instance.State == GameState.GameOver)
-	        {
-	            GameCore.Instance.Restart();
-	            DeactivateGameOverMenu();
-            }
-            else if (GameCore.Instance.State == GameState.LevelCompleted)
-            {
-	            GameCore.Instance.Restart();
-                DeactivateLevelCompleteMenu();
-            }
-        }	
-	}
+        foreach (var tweener in Tweeners)
+        {
+            tweener.Kill(true);
+        }
+        Tweeners.Clear();
+    }
+
 
 }

@@ -12,12 +12,13 @@ namespace Game
         public int ConsecutiveBoostCount { get; set; }
         private int _boostSteps;
         private const int BoostLimit = 3;
-        private bool _isBoostActive;
+        public bool IsBoostActive;
         public Vector3 GoalPosition;
         public ZCubeType CurrentCubeType = ZCubeType.Transmissive;
         public ZCubeType NextCubeType;
 
-        public int Level;
+        public int Level = 1;
+        public int Score;
 
         private void Start()
         {
@@ -42,12 +43,12 @@ namespace Game
 
         public void CalculateGoalPosition()
         {
-            GoalPosition = new Vector3(Random.Range(100, 150) * CubesController.Gap, 0f, Random.Range(-150, 150) * CubesController.Gap);
+            GoalPosition = new Vector3(Random.Range(100*Level, 150 * Level) * CubesController.Gap, 0f, Random.Range(-150 * Level, 150 * Level) * CubesController.Gap);
         }
 
         void Update()
         {
-            if (_isBoostActive && GameCore.Instance.State == GameState.AwaitingTransmission)
+            if (IsBoostActive && GameCore.Instance.State == GameState.AwaitingTransmission)
             {
                 BoostMove();
             }
@@ -101,7 +102,7 @@ namespace Game
 
                         if (ConsecutiveBoostCount == BoostLimit)
                         {
-                            _isBoostActive = true;
+                            IsBoostActive = true;
                             _boostSteps = 5; //TODO: change later
                             GameCore.TransmissionDuration = 0.4f;
                         }
@@ -114,8 +115,9 @@ namespace Game
 
         private void NormalMove(ZCube cube)
         {
-            if ((cube.Type == ZCubeType.Transmissive || cube.Type == ZCubeType.Boost || cube.Type == ZCubeType.Goal) && (cube.transform.localScale.y > 8f || _isBoostActive)) //NodeSelect Logic here
+            if ((cube.Type == ZCubeType.Transmissive || cube.Type == ZCubeType.Boost || cube.Type == ZCubeType.Goal) && (cube.transform.localScale.y > 8f || IsBoostActive)) //NodeSelect Logic here
             {
+                Score += Mathf.CeilToInt((transform.position - cube.transform.position).magnitude * Level);
                 transform.position = cube.transform.position;//Move player
                 Camera.main.transform.DOMove(transform.position + CamOffset, GameCore.TransmissionDuration);
                 GameCore.Instance.State = GameState.Transmitting;
@@ -149,7 +151,7 @@ namespace Game
 
                 if (--_boostSteps == 0)
                 {
-                    _isBoostActive = false;
+                    IsBoostActive = false;
                     ConsecutiveBoostCount = 0;
                     GameCore.TransmissionDuration = 0.75f;
                 }

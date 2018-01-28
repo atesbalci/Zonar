@@ -55,17 +55,18 @@ namespace Game
             State = GameState.Menu;
         }
 
-        public void Restart()
+        public void Restart(int level = 1)
         {
             //cubes,player,ui,endgame,timer,state,score,
-
             var cubeController = Object.FindObjectOfType<CubesController>();
             if (cubeController != null)
             {
                 Player.transform.position = Vector3.zero;
-                Player.Level = 0;
+                Player.Level = level == 1 ? 1 : Player.Level++;
+                Player.Score = level == 1 ? 0 :Player.Score;
                 Player.CurrentCubeType = ZCubeType.Basic;
-                Player.NextCubeType = ZCubeType.Basic; 
+                Player.NextCubeType = ZCubeType.Basic;
+                Player.IsBoostActive = false;
                 Camera.main.transform.position = Player.CamOffset;
                 var trail = Object.FindObjectOfType<PlayerTrail>();
                 if (trail != null)

@@ -473,10 +473,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CamOffset: {x: 0, y: 0, z: 0}
+  IsBoostActive: 0
   GoalPosition: {x: 0, y: 0, z: 0}
   CurrentCubeType: 1
   NextCubeType: 0
-  Level: 0
+  Level: 1
+  Score: 0
 --- !u!1 &989222766
 GameObject:
   m_ObjectHideFlags: 0
