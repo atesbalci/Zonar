@@ -7,10 +7,17 @@ namespace Game
 {
     public class PlayerTrail : MonoBehaviour
     {
+        private Tweener _levelCompletedTeweener;
+
         private void Start()
         {
             MessageBroker.Default.Receive<GameStateChangeEvent>().Subscribe(ev =>
             {
+                if (_levelCompletedTeweener != null)
+                {
+                    _levelCompletedTeweener.Kill(true);
+                    _levelCompletedTeweener = null;
+                }
                 if (ev.State == GameState.Transmitting)
                 {
                     var move = GameCore.Instance.Player.transform.position - transform.position;
@@ -41,7 +48,7 @@ namespace Game
                 {
                     Observable.Timer(TimeSpan.FromSeconds(1f)).Subscribe(l =>
                     {
-                        transform.DOMoveY(150, 3f);
+                        _levelCompletedTeweener = transform.DOMoveY(150, 3f);
                     });
                 }
                 

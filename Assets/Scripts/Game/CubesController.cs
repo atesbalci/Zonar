@@ -126,7 +126,7 @@ namespace Game
                     Timer += Time.deltaTime;
                     //Timer -= 3.5f;
                 }
-                else
+                else if(state != GameState.LevelCompleted)
                 {
                     GameCore.Instance.State = GameState.GameOver;
                 }

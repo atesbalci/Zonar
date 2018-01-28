@@ -63,6 +63,9 @@ namespace Game
             if (cubeController != null)
             {
                 Player.transform.position = Vector3.zero;
+                Player.Level = 0;
+                Player.CurrentCubeType = ZCubeType.Basic;
+                Player.NextCubeType = ZCubeType.Basic; 
                 Camera.main.transform.position = Player.CamOffset;
                 var trail = Object.FindObjectOfType<PlayerTrail>();
                 if (trail != null)

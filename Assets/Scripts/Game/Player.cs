@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using DG.Tweening;
+using JetBrains.Annotations;
 using UniRx;
 using UnityEngine;
 
@@ -16,6 +17,7 @@ namespace Game
         public ZCubeType CurrentCubeType = ZCubeType.Transmissive;
         public ZCubeType NextCubeType;
 
+        public int Level;
 
         private void Start()
         {
@@ -40,7 +42,7 @@ namespace Game
 
         public void CalculateGoalPosition()
         {
-            GoalPosition = new Vector3(Random.Range(100, 150) * CubesController.Gap, 0f, Random.Range(100, 150) * CubesController.Gap);
+            GoalPosition = new Vector3(Random.Range(100, 150) * CubesController.Gap, 0f, Random.Range(-150, 150) * CubesController.Gap);
         }
 
         void Update()
@@ -153,5 +155,6 @@ namespace Game
                 }
             }
         }
+
     }
 }
