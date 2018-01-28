@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using Game;
@@ -31,8 +32,8 @@ public class Menu : MonoBehaviour
     public Text TapToNextLevel;
 
     public BlurOptimized BlurOptimized;
-    public List<Tweener> Tweeners = new List<Tweener>(); 
-
+    public List<Tweener> Tweeners = new List<Tweener>();
+    private bool _blockInput;
     void Start()
     {
         MessageBroker.Default.Receive<GameStateChangeEvent>().Subscribe(ev =>
@@ -40,11 +41,20 @@ public class Menu : MonoBehaviour
             if (ev.State == GameState.GameOver)
             {
                 ActivateGameOverMenu();
-                //TODO: Score calculation stuff here, blur stuff also
+                _blockInput = true;
+                Observable.Timer(TimeSpan.FromSeconds(0.75f)).Subscribe(l =>
+                {
+                    _blockInput = false;
+                });
             }
             else if (ev.State == GameState.LevelCompleted)
             {
                 ActivateLevelCompleteMenu();
+                _blockInput = true;
+                Observable.Timer(TimeSpan.FromSeconds(2f)).Subscribe(l =>
+                {
+                    _blockInput = false;
+                });
             }
         });
         BlurOptimized = FindObjectOfType<BlurOptimized>();
@@ -52,7 +62,7 @@ public class Menu : MonoBehaviour
 
     void Update ()
     {
-	    if (Input.GetMouseButton(0))
+	    if (Input.GetMouseButton(0) && !_blockInput)
 	    {
 	        if (GameCore.Instance.State == GameState.Menu)
 	        {
@@ -90,6 +100,10 @@ public class Menu : MonoBehaviour
         Tweeners.Add(LevelScore.transform.DOMoveX(Screen.width / 2f, 0.6f));
         Tweeners.Add(LevelScoreValue.transform.DOMoveX(Screen.width / 2f, 0.7f));
         Tweeners.Add(TapToNextLevel.transform.DOMoveX(Screen.width / 2f, 0.8f));
+        if (BlurOptimized != null)
+        {
+            BlurOptimized.enabled = true;
+        }
     }
 
     private void DeactivateLevelCompleteMenu()
@@ -99,6 +113,10 @@ public class Menu : MonoBehaviour
         Tweeners.Add(LevelScore.transform.DOMoveX(-1200f, 0.2f));
         Tweeners.Add(LevelScoreValue.transform.DOMoveX(-1200f, 0.2f));
         Tweeners.Add(TapToNextLevel.transform.DOMoveX(-1200f, 0.2f));
+        if (BlurOptimized != null)
+        {
+            BlurOptimized.enabled = false;
+        }
     }
 
     private void ActivateGameOverMenu()
