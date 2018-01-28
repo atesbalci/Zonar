@@ -372,7 +372,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: GAMEOVER
+  m_Text: GAME OVER
 --- !u!114 &114235141261908392
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -572,6 +572,7 @@ MonoBehaviour:
   HighScore: {fileID: 114416619153750836}
   HighScoreValue: {fileID: 114157394485987382}
   TapToRestart: {fileID: 114810693893765048}
+  BlurOptimized: {fileID: 0}
 --- !u!114 &114551009400465726
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -4,7 +4,9 @@ using DG.Tweening;
 using Game;
 using UniRx;
 using UnityEngine;
+using UnityEngine.PostProcessing;
 using UnityEngine.UI;
+using UnityStandardAssets.ImageEffects;
 
 public class Menu : MonoBehaviour
 {
@@ -19,6 +21,8 @@ public class Menu : MonoBehaviour
     public Text HighScoreValue;
     public Text TapToRestart;
 
+    public BlurOptimized BlurOptimized;
+
     void Start()
     {
         MessageBroker.Default.Receive<GameStateChangeEvent>().Subscribe(ev =>
@@ -29,6 +33,7 @@ public class Menu : MonoBehaviour
                 //TODO: Score calculation stuff here, blur stuff also
             }
         });
+        BlurOptimized = FindObjectOfType<BlurOptimized>();
     }
 
     private void ActivateGameOverMenu()
@@ -39,6 +44,12 @@ public class Menu : MonoBehaviour
         HighScore.transform.DOMoveX(Screen.width/2f, 0.8f);
         HighScoreValue.transform.DOMoveX(Screen.width/2f, 0.9f);
         TapToRestart.transform.DOMoveX(Screen.width/2f, 1f);
+
+        if (BlurOptimized != null)
+        {
+            BlurOptimized.enabled = true;
+        }
+
     }
 
     void Update ()
