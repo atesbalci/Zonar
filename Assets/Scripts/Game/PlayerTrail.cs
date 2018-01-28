@@ -35,14 +35,16 @@ namespace Game
                     var unitDur = dur / moveAmt;
                     if (diff > 0.001f)
                     {
-                        move.x = Mathf.Sign(move.x) * Mathf.Abs(move.z);
-                        seq.Append(transform.DOMoveX(diff * Mathf.Sign(move.x), unitDur * diff).SetRelative());
+                        var delta = diff * Mathf.Sign(move.x);
+                        move.x -= delta;
+                        seq.Append(transform.DOMoveX(delta, unitDur * diff).SetRelative());
                         dur -= unitDur * diff;
                     }
                     else if (diff < -0.001f)
                     {
-                        move.z = Mathf.Sign(move.z) * Mathf.Abs(move.x);
-                        seq.Append(transform.DOMoveZ(-diff * Mathf.Sign(move.z), unitDur * -diff).SetRelative());
+                        var delta = -diff * Mathf.Sign(move.z);
+                        move.z -= delta;
+                        seq.Append(transform.DOMoveZ(delta, unitDur * -diff).SetRelative());
                         dur -= unitDur * -diff;
                     }
                     if (dur > 0.001f)
