@@ -37,6 +37,17 @@ public class Menu : MonoBehaviour
 
     void Start()
     {
+        Header.transform.position = new Vector3(-Screen.width, Header.transform.position.y, Header.transform.position.z);
+        Score.transform.position = new Vector3(-Screen.width, Score.transform.position.y, Score.transform.position.z);
+        ScoreValue.transform.position = new Vector3(-Screen.width, ScoreValue.transform.position.y, ScoreValue.transform.position.z);
+        HighScore.transform.position = new Vector3(-Screen.width, HighScore.transform.position.y, HighScore.transform.position.z);
+        HighScoreValue.transform.position = new Vector3(-Screen.width, HighScoreValue.transform.position.y, HighScoreValue.transform.position.z);
+        TapToRestart.transform.position = new Vector3(-Screen.width, TapToRestart.transform.position.y, TapToRestart.transform.position.z);
+        LevelText.transform.position = new Vector3(-Screen.width, LevelText.transform.position.y, LevelText.transform.position.z);
+        LevelScore.transform.position = new Vector3(-Screen.width, LevelScore.transform.position.y, LevelScore.transform.position.z);
+        LevelScoreValue.transform.position = new Vector3(-Screen.width, LevelScoreValue.transform.position.y, LevelScoreValue.transform.position.z);
+        TapToNextLevel.transform.position = new Vector3(-Screen.width, TapToNextLevel.transform.position.y, TapToNextLevel.transform.position.z);
+
         MessageBroker.Default.Receive<GameStateChangeEvent>().Subscribe(ev =>
         {
             if (ev.State == GameState.GameOver)
@@ -110,10 +121,10 @@ public class Menu : MonoBehaviour
     private void DeactivateLevelCompleteMenu()
     {
         KillTweeners();
-        Tweeners.Add(LevelText.transform.DOMoveX(-1200f, 0.2f));
-        Tweeners.Add(LevelScore.transform.DOMoveX(-1200f, 0.2f));
-        Tweeners.Add(LevelScoreValue.transform.DOMoveX(-1200f, 0.2f));
-        Tweeners.Add(TapToNextLevel.transform.DOMoveX(-1200f, 0.2f));
+        Tweeners.Add(LevelText.transform.DOMoveX(-Screen.width, 0.2f));
+        Tweeners.Add(LevelScore.transform.DOMoveX(-Screen.width, 0.2f));
+        Tweeners.Add(LevelScoreValue.transform.DOMoveX(-Screen.width, 0.2f));
+        Tweeners.Add(TapToNextLevel.transform.DOMoveX(-Screen.width, 0.2f));
         if (BlurOptimized != null)
         {
             BlurOptimized.enabled = false;
@@ -161,12 +172,12 @@ public class Menu : MonoBehaviour
     private void DeactivateGameOverMenu()
     {
         KillTweeners();
-        Tweeners.Add(Header.transform.DOMoveX(-1200f, 0.2f));
-        Tweeners.Add(Score.transform.DOMoveX(-1200f, 0.2f));
-        Tweeners.Add(ScoreValue.transform.DOMoveX(-1200f, 0.2f));
-        Tweeners.Add(HighScore.transform.DOMoveX(-1200f, 0.2f));
-        Tweeners.Add(HighScoreValue.transform.DOMoveX(-1200f, 0.2f));
-        Tweeners.Add(TapToRestart.transform.DOMoveX(-1200f, 0.2f));
+        Tweeners.Add(Header.transform.DOMoveX(-Screen.width, 0.2f));
+        Tweeners.Add(Score.transform.DOMoveX(-Screen.width, 0.2f));
+        Tweeners.Add(ScoreValue.transform.DOMoveX(-Screen.width, 0.2f));
+        Tweeners.Add(HighScore.transform.DOMoveX(-Screen.width, 0.2f));
+        Tweeners.Add(HighScoreValue.transform.DOMoveX(-Screen.width, 0.2f));
+        Tweeners.Add(TapToRestart.transform.DOMoveX(-Screen.width, 0.2f));
 
         if (BlurOptimized != null)
         {

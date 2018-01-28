@@ -707,8 +707,8 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "*Tap magenta and blue nodes before it's too late. \n\n*Red edges show destination\n\n*Combining
-    magenta nodes give you boost"
+  m_Text: "*Tap magenta and blue nodes before it's too late. \n\n*Red edges show your
+    destination\n\n*Combining magenta nodes give you boost"
 --- !u!114 &114416619153750836
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1581,7 +1581,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.2}
   m_AnchorMax: {x: 0.5, y: 0.2}
-  m_AnchoredPosition: {x: 0, y: -738}
+  m_AnchoredPosition: {x: 0, y: -844.52}
   m_SizeDelta: {x: 1000, y: 500}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224649781452091788

@@ -370,6 +370,11 @@ Prefab:
       value: "*Tap magenta and blue nodes before it's too late. \n\n*Red edges show
         your destination\n\n*Combining magenta nodes give you boost"
       objectReference: {fileID: 0}
+    - target: {fileID: 224493478945124412, guid: dabcdfe3089e9fe47ab81dbbd9889aba,
+        type: 2}
+      propertyPath: m_AnchoredPosition.y
+      value: -844.52
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: dabcdfe3089e9fe47ab81dbbd9889aba, type: 2}
   m_IsPrefabParent: 0
