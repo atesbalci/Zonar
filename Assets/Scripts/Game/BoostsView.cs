@@ -17,7 +17,7 @@ namespace Game
 
             MessageBroker.Default.Receive<GameStateChangeEvent>().Subscribe(ev =>
             {
-                if (ev.State == GameState.Menu)
+                if (ev.State == GameState.Menu || ev.State == GameState.GameOver || ev.State == GameState.LevelCompleted)
                 {
                     foreach (var renderer1 in Renderers)
                     {

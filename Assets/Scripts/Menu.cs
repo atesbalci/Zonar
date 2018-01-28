@@ -34,6 +34,7 @@ public class Menu : MonoBehaviour
     public BlurOptimized BlurOptimized;
     public List<Tweener> Tweeners = new List<Tweener>();
     private bool _blockInput;
+
     void Start()
     {
         MessageBroker.Default.Receive<GameStateChangeEvent>().Subscribe(ev =>
@@ -42,7 +43,7 @@ public class Menu : MonoBehaviour
             {
                 ActivateGameOverMenu();
                 _blockInput = true;
-                Observable.Timer(TimeSpan.FromSeconds(0.75f)).Subscribe(l =>
+                Observable.Timer(TimeSpan.FromSeconds(1f)).Subscribe(l =>
                 {
                     _blockInput = false;
                 });
@@ -51,7 +52,7 @@ public class Menu : MonoBehaviour
             {
                 ActivateLevelCompleteMenu();
                 _blockInput = true;
-                Observable.Timer(TimeSpan.FromSeconds(2f)).Subscribe(l =>
+                Observable.Timer(TimeSpan.FromSeconds(1.5f)).Subscribe(l =>
                 {
                     _blockInput = false;
                 });
@@ -181,6 +182,4 @@ public class Menu : MonoBehaviour
         }
         Tweeners.Clear();
     }
-
-
 }

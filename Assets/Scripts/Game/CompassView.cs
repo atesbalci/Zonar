@@ -16,9 +16,17 @@ namespace Game
         private void Start()
         {
             _cam = Camera.main;
+            gameObject.SetActive(false); //close when gameLoads
             MessageBroker.Default.Receive<GameStateChangeEvent>().Subscribe(ev =>
             {
-                gameObject.SetActive(ev.State != GameState.Menu);
+                if (ev.State == GameState.Menu || ev.State == GameState.GameOver || ev.State == GameState.LevelCompleted)
+                {
+                    gameObject.SetActive(false);
+                }
+                else
+                {
+                    gameObject.SetActive(true);
+                }
             });
         }
 
