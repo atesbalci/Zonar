@@ -58,7 +58,7 @@ namespace Game
 
                 var hits = Physics.SphereCastAll(ray, 2f, 1000);
                 var selectedHits =
-                    hits.Where(y => y.transform.localScale.y > 5f)
+                    hits.Where(y => y.transform.localScale.y > 8f)
                         .OrderBy(x => (ray.origin - x.transform.position).magnitude)
                         .ToList();
                 var boost = selectedHits.Where(x =>
@@ -72,7 +72,7 @@ namespace Game
                     {
                         return false;
                     }
-                });
+                }).ToList();
 
                 if (boost.Any())
                 {
@@ -103,8 +103,8 @@ namespace Game
                         if (ConsecutiveBoostCount == BoostLimit)
                         {
                             IsBoostActive = true;
-                            _boostSteps = 3 + Level * 2; //TODO: change later
-                            GameCore.TransmissionDuration = Mathf.Clamp(0.45f - Level*0.05f, 0.2f, 1f);
+                            _boostSteps = 3 + Level; //TODO: change later
+                            GameCore.TransmissionDuration = GameCore.GetBoostDuration();
                         }
                         NormalMove(selectedCube);
                         break;
@@ -153,10 +153,9 @@ namespace Game
                 {
                     IsBoostActive = false;
                     ConsecutiveBoostCount = 0;
-                    GameCore.TransmissionDuration = 0.75f;
+                    GameCore.TransmissionDuration = GameCore.GetNormalDuration();
                 }
             }
         }
-
     }
 }

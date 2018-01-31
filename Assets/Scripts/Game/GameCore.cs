@@ -77,7 +77,23 @@ namespace Game
                 State = GameState.AwaitingTransmission;
                 Player.ConsecutiveBoostCount = 0;
                 Player.CalculateGoalPosition();
+                TransmissionDuration = GetNormalDuration();
             }
+        }
+
+        public static float GetBoostDuration()
+        {
+            return GetTransmissionDuration(0.45f, 0.025f, 0.1f);
+        }
+
+        public static float GetNormalDuration()
+        {
+            return GetTransmissionDuration(0.75f, 0.025f, 0.25f);
+        }
+
+        private static float GetTransmissionDuration(float start, float levelDecrease, float minDuration)
+        {
+            return Mathf.Clamp(start - Instance.Player.Level * levelDecrease, minDuration, 1f);
         }
     }
 }
