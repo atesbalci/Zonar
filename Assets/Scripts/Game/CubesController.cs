@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
 using UniRx;
@@ -21,9 +20,14 @@ namespace Game
 
         public float Timer;
         private Tweener[] _tweeners;
+        private float _curVisibility;
 
         private void Start()
         {
+            Shader.SetGlobalFloat("_MIN", 1f);
+            Shader.SetGlobalFloat("_MAX", ZCube.MaxHeight);
+            Shader.SetGlobalFloat("_MULTIPLIER", 1f);
+            Application.targetFrameRate = 60;
             Tile();
             Vector3 pos = Vector3.zero;
             MessageBroker.Default.Receive<GameStateChangeEvent>().Subscribe(ev =>
@@ -52,7 +56,7 @@ namespace Game
                         {
                             continue;
                         }
-                        var y = cube.transform.localScale.y;
+                        //var y = cube.transform.localScale.y;
                         var dist = Vector3.Distance(cube.transform.position, pos);
                         _tweeners[i] = cube.transform.DOScaleY(dist < 1.5f ? ZCube.MaxHeight : 1f,
                             Mathf.Min(GameCore.TransmissionDuration - 0.1f,
@@ -108,6 +112,7 @@ namespace Game
                         var cube = Instantiate(CubePrefab, pos, Quaternion.identity).GetComponent<ZCube>();
                         cube.transform.SetParent(_cubeParent.transform);
                         Cubes.Add(cube);
+                        cube.Init();
                         cube.SetCubeType();
                     }
                 }
@@ -157,11 +162,17 @@ namespace Game
                     }
                 }
 
-                cube.RefreshColor(Mathf.PerlinNoise(cube.transform.localPosition.x + Time.time, cube.transform.localPosition.z + Time.time));
+                //cube.RefreshColor(Mathf.PerlinNoise(cube.transform.localPosition.x + Time.time, cube.transform.localPosition.z + Time.time));
             }
 
-            ZCube.IdleColor = Color.Lerp(ZCube.IdleColor,
-                state == GameState.Transmitting ? Color.black : ZCube.DefaultIdleColor , Time.deltaTime * 10f);
+            //ZCube.IdleColor = Color.Lerp(ZCube.IdleColor,
+            //    state == GameState.Transmitting ? Color.black : ZCube.DefaultIdleColor , Time.deltaTime * 10f);
+            var newVisibility = Mathf.Clamp01(_curVisibility + (state == GameState.Transmitting ? -1f : 1f) * Time.deltaTime * 4f);
+            if (!Mathf.Approximately(newVisibility, _curVisibility))
+            {
+                _curVisibility = newVisibility;
+                Shader.SetGlobalFloat("_MULTIPLIER", _curVisibility);
+            }
         }
 
         private static float CalculateHeight(float distance, float time, float speed, float width, float min, float max)
