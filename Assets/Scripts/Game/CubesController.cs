@@ -136,33 +136,27 @@ namespace Game
                     GameCore.Instance.State = GameState.GameOver;
                 }
             }
-
+            
+            // ReSharper disable once TooWideLocalVariableScope
+            float height;
+            var level = GameCore.Instance.Player.Level;
+            var globalTime = Time.time;
             foreach (var cube in Cubes)
             {
-                if (GameCore.Instance.State != GameState.Menu)
+                height = 1f - Mathf.PerlinNoise(cube.LocalPos.x * 0.5f + globalTime, cube.LocalPos.z * 0.5f + globalTime);
+                if (cube.Type == ZCubeType.Player || cube.Type == ZCubeType.Goal)
+                {
+                    height = ZCube.MaxHeight;
+                }
+                else
                 {
                     if (state == GameState.AwaitingTransmission)
                     {
-                        var scale = cube.transform.localScale;
-                        if (cube.Type == ZCubeType.Player || cube.Type == ZCubeType.Goal)
-                        {
-                            scale = new Vector3(1f, ZCube.MaxHeight, 1f);
-                        }
-                        else
-                        {
-                            scale.y = CalculateHeight(cube.transform.localPosition.magnitude, Timer, Speed + GameCore.Instance.Player.Level * 0.25f,
-                                RingWidth, 1f, ZCube.MaxHeight);
-                        }
-
-                        cube.transform.localScale = scale;
-                    }
-                    if (cube.Type == ZCubeType.Player)
-                    {
-                        cube.transform.localScale = new Vector3(1f, ZCube.MaxHeight, 1f);
+                        height = CalculateHeight(cube.RadialDistance, Timer, Speed + level * 0.25f,
+                            RingWidth, height, ZCube.MaxHeight);
                     }
                 }
-
-                //cube.RefreshColor(Mathf.PerlinNoise(cube.transform.localPosition.x + Time.time, cube.transform.localPosition.z + Time.time));
+                cube.transform.localScale = new Vector3(1f, height, 1f);
             }
 
             //ZCube.IdleColor = Color.Lerp(ZCube.IdleColor,

@@ -180,7 +180,7 @@ QualitySettings:
     excludedTargetPlatforms:
     - Android
   m_PerPlatformDefaultQuality:
-    Android: 2
+    Android: 0
     Nintendo 3DS: 5
     Nintendo Switch: 5
     PS4: 5

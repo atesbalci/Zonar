@@ -23,7 +23,9 @@ namespace Game
         public static readonly Color DefaultColor = new Color(0.71f, 0.71f, 0.71f);
         public static Color IdleColor = DefaultIdleColor;
 
-        public ZCubeType Type;
+        public ZCubeType Type { get; set; }
+        public float RadialDistance { get; private set; }
+        public Vector3 LocalPos { get; private set; }
 
         private Renderer _rend;
         private MaterialPropertyBlock _properties;
@@ -32,6 +34,8 @@ namespace Game
         {
             _rend = GetComponentInChildren<Renderer>();
             _properties = new MaterialPropertyBlock();
+            RadialDistance = transform.localPosition.magnitude;
+            LocalPos = transform.localPosition;
         }
 
         public void RefreshColor(float noiseSeed)
