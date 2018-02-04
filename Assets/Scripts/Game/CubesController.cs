@@ -105,7 +105,9 @@ namespace Game
                 {
                     var pos = new Vector3(x - WaveRadius / 2 - 1, 0f, y - WaveRadius / 2 - 1) * Gap;
                     var scrPos = Camera.main.WorldToScreenPoint(pos);
-                    if (scrPos.x >= -ScreenBoundTolerance && scrPos.y >= -ScreenBoundTolerance &&
+                    if ((pos.magnitude<GameCore.MaxBoostLeapDistance + 1f) || //max boost distance required for small screen devices.
+                        scrPos.x >= -ScreenBoundTolerance && 
+                        scrPos.y >= -ScreenBoundTolerance &&
                         scrPos.x < Screen.width + ScreenBoundTolerance &&
                         scrPos.y < Screen.height + ScreenBoundTolerance)
                     {
@@ -124,17 +126,27 @@ namespace Game
         private void Update()
         {
             var state = GameCore.Instance.State;
-            if (state == GameState.AwaitingTransmission || state == GameState.LevelCompleted)
+            var newVisibility = Mathf.Clamp01(_curVisibility + (state == GameState.Transmitting ? -1f : 1f) * Time.deltaTime * 10f);
+            if (!Mathf.Approximately(newVisibility, _curVisibility))
+            {
+                _curVisibility = newVisibility;
+                Shader.SetGlobalFloat("_MULTIPLIER", _curVisibility);
+            }
+
+            if (state == GameState.AwaitingTransmission)
             {
                 if (Timer < 3.5f)
                 {
                     Timer += Time.deltaTime;
-                    //Timer -= 3.5f;
                 }
-                else if(state != GameState.LevelCompleted)
+                else if (state != GameState.LevelCompleted)
                 {
                     GameCore.Instance.State = GameState.GameOver;
                 }
+            }
+            else if (state != GameState.LevelCompleted)
+            {
+                return;
             }
             
             // ReSharper disable once TooWideLocalVariableScope
@@ -157,15 +169,6 @@ namespace Game
                     }
                 }
                 cube.transform.localScale = new Vector3(1f, height, 1f);
-            }
-
-            //ZCube.IdleColor = Color.Lerp(ZCube.IdleColor,
-            //    state == GameState.Transmitting ? Color.black : ZCube.DefaultIdleColor , Time.deltaTime * 10f);
-            var newVisibility = Mathf.Clamp01(_curVisibility + (state == GameState.Transmitting ? -1f : 1f) * Time.deltaTime * 4f);
-            if (!Mathf.Approximately(newVisibility, _curVisibility))
-            {
-                _curVisibility = newVisibility;
-                Shader.SetGlobalFloat("_MULTIPLIER", _curVisibility);
             }
         }
 

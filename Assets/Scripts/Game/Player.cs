@@ -16,6 +16,7 @@ namespace Game
         public Vector3 GoalPosition;
         public ZCubeType CurrentCubeType = ZCubeType.Transmissive;
         public ZCubeType NextCubeType;
+        private bool _debugboost;
 
         public int Level = 1;
         public int Score;
@@ -48,6 +49,13 @@ namespace Game
 
         void Update()
         {
+#if UNITY_EDITOR
+            if (Input.GetKeyUp(KeyCode.Space))
+            {
+                IsBoostActive = !IsBoostActive;
+                _debugboost = !_debugboost;
+            }
+#endif
             if (IsBoostActive && GameCore.Instance.State == GameState.AwaitingTransmission)
             {
                 BoostMove();
@@ -104,7 +112,6 @@ namespace Game
                         {
                             IsBoostActive = true;
                             _boostSteps = 3 + Level; //TODO: change later
-                            GameCore.TransmissionDuration = GameCore.GetBoostDuration();
                         }
                         NormalMove(selectedCube);
                         break;
@@ -117,6 +124,15 @@ namespace Game
         {
             if ((cube.Type == ZCubeType.Transmissive || cube.Type == ZCubeType.Boost || cube.Type == ZCubeType.Goal) && (cube.transform.localScale.y > 8f || IsBoostActive)) //NodeSelect Logic here
             {
+                if (IsBoostActive)
+                {
+                    GameCore.TransmissionDuration = GameCore.GetBoostSpeed()*(transform.position - cube.transform.position).magnitude;
+                }
+                else
+                {
+                    GameCore.TransmissionDuration = GameCore.GetNormalSpeed()*(transform.position - cube.transform.position).magnitude;
+                }
+
                 Score += Mathf.CeilToInt((transform.position - cube.transform.position).magnitude * Level);
                 transform.position = cube.transform.position;//Move player
                 Camera.main.transform.DOMove(transform.position + CamOffset, GameCore.TransmissionDuration);
@@ -140,20 +156,20 @@ namespace Game
                 for (int i = 0; i < transmissives.Count; i++) //TODO: Distance for goal node
                 {
                     var zCube = transmissives[i];
-                    var dis = (zCube.transform.position - GoalPosition).magnitude;
-                    if (dis < distance)
+                    var distanceToGoal = (zCube.transform.position - GoalPosition).magnitude;
+                    var distanceFromPlayer = (zCube.transform.position - transform.position).magnitude;
+                    if (distanceToGoal < distance && distanceFromPlayer < GameCore.MaxBoostLeapDistance)
                     {
                         selectedCubeindex = i;
-                        distance = dis;
+                        distance = distanceToGoal;
                     }
                 }
                 NormalMove(transmissives[selectedCubeindex]);
 
-                if (--_boostSteps == 0)
+                if (--_boostSteps == 0 && !_debugboost) 
                 {
                     IsBoostActive = false;
                     ConsecutiveBoostCount = 0;
-                    GameCore.TransmissionDuration = GameCore.GetNormalDuration();
                 }
             }
         }

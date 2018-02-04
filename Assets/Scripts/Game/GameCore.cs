@@ -23,6 +23,7 @@ namespace Game
     {
         public static GameCore Instance { get { return _instance ?? (_instance = new GameCore()); } }
         public static float TransmissionDuration = 0.75f;
+        public static float MaxBoostLeapDistance = 20f;
 
         public Player Player { get; set; }
 
@@ -77,18 +78,17 @@ namespace Game
                 State = GameState.AwaitingTransmission;
                 Player.ConsecutiveBoostCount = 0;
                 Player.CalculateGoalPosition();
-                TransmissionDuration = GetNormalDuration();
             }
         }
 
-        public static float GetBoostDuration()
+        public static float GetBoostSpeed()
         {
-            return GetTransmissionDuration(0.45f, 0.025f, 0.1f);
+            return GetTransmissionDuration(0.05f, 0.005f, 0.01f);
         }
 
-        public static float GetNormalDuration()
+        public static float GetNormalSpeed()
         {
-            return GetTransmissionDuration(0.75f, 0.025f, 0.25f);
+            return GetTransmissionDuration(0.1f, 0.01f, 0.02f);
         }
 
         private static float GetTransmissionDuration(float start, float levelDecrease, float minDuration)
