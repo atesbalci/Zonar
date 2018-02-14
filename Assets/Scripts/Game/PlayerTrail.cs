@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using DG.Tweening;
 using UniRx;
 using UnityEngine;
@@ -9,9 +10,11 @@ namespace Game
     {
         private Tweener _levelCompletedTeweener;
         private IDisposable _levelDisposable = null;
+        private TrailRenderer _trail;
 
         private void Start()
         {
+            _trail = GetComponentInChildren<TrailRenderer>();
             MessageBroker.Default.Receive<GameStateChangeEvent>().Subscribe(ev =>
             {
                 if (_levelCompletedTeweener != null)
@@ -51,6 +54,10 @@ namespace Game
                     {
                         ZigZag(seq, move, dur);
                     }
+
+                    var lastBoost = GameCore.Instance.Player.Boosts.LastOrDefault();
+                    SetColor(lastBoost > 0 ?
+                        ZCube.GetCubeColor((ZCubeType)lastBoost) : Color.white);
                 }
                 else if (ev.State == GameState.LevelCompleted)
                 {
@@ -60,6 +67,17 @@ namespace Game
                     });
                 }
             });
+        }
+
+        private void SetColor(Color col)
+        {
+            var gradient = new Gradient
+            {
+                alphaKeys = _trail.colorGradient.alphaKeys,
+                colorKeys = new[]
+                    {new GradientColorKey(col, 0f)}
+            };
+            _trail.colorGradient = gradient;
         }
 
         private void ZigZag(Sequence seq, Vector3 move, float duration)

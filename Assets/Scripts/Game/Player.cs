@@ -1,6 +1,6 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using DG.Tweening;
-using JetBrains.Annotations;
 using UniRx;
 using UnityEngine;
 
@@ -9,12 +9,12 @@ namespace Game
     public class Player : MonoBehaviour
     {
         public Vector3 CamOffset;
-        public int ConsecutiveBoostCount { get; set; }
+        public List<int> Boosts { get; private set; }
         private int _boostSteps;
-        private const int BoostLimit = 3;
+        public const int BoostLimit = 3;
         public bool IsBoostActive;
         public Vector3 GoalPosition;
-        public ZCubeType CurrentCubeType = ZCubeType.Transmissive;
+        public ZCubeType CurrentCubeType;
         public ZCubeType NextCubeType;
         private bool _debugboost;
 
@@ -27,7 +27,7 @@ namespace Game
             CamOffset = Camera.main.transform.position;
             GameCore.Instance.Player = this;
             CalculateGoalPosition();
-            Debug.Log(GoalPosition);
+            Boosts = new List<int>();
 
             MessageBroker.Default.Receive<GameStateChangeEvent>().Subscribe(ev =>
             {
@@ -72,7 +72,8 @@ namespace Game
                 var boost = selectedHits.Where(x =>
                 {
                     var c = x.transform.GetComponent<ZCube>();
-                    if (c != null && c.Type == ZCubeType.Boost)
+                    if (c != null && c.Type >= ZCubeType.Transmissive1
+                                  && c.Type <= ZCubeType.Transmissive3)
                     {
                         return true;
                     }
@@ -89,26 +90,24 @@ namespace Game
 
                 foreach (var raycastHit in selectedHits)
                 {
-                    var cube = raycastHit.transform.GetComponent<ZCube>();
-                    if (cube != null)
+                    var selectedCube = raycastHit.transform.GetComponent<ZCube>();
+                    if (selectedCube != null)
                     {
-                        var selectedCube = cube;
                         if (selectedCube.Type == ZCubeType.Basic)
                         {
                             continue;
                         }
-                        if (selectedCube.Type == ZCubeType.Boost) //Set boost count
+                        if (selectedCube.Type >= ZCubeType.Transmissive1
+                            && selectedCube.Type <= ZCubeType.Transmissive3) //Set boost count
                         {
-                            ConsecutiveBoostCount++;
-                            Debug.Log("BoostCount " + ConsecutiveBoostCount);
+                            Boosts.Add((int)selectedCube.Type);
+                            if (Boosts.Distinct().Count() > 1)
+                            {
+                                GameCore.Instance.State = GameState.GameOver;
+                                break;
+                            }
                         }
-                        else if(selectedCube.Type == ZCubeType.Transmissive)
-                        {
-                            ConsecutiveBoostCount = 0;
-                            Debug.Log("Boost Cleared");
-                        }
-
-                        if (ConsecutiveBoostCount == BoostLimit)
+                        if (Boosts.Count == BoostLimit)
                         {
                             IsBoostActive = true;
                             _boostSteps = 3 + Level; //TODO: change later
@@ -122,7 +121,7 @@ namespace Game
 
         private void NormalMove(ZCube cube)
         {
-            if ((cube.Type == ZCubeType.Transmissive || cube.Type == ZCubeType.Boost || cube.Type == ZCubeType.Goal) && (cube.transform.localScale.y > 8f || IsBoostActive)) //NodeSelect Logic here
+            if (((cube.Type >= ZCubeType.Transmissive1 && cube.Type <= ZCubeType.Transmissive3) || cube.Type == ZCubeType.Goal) && (cube.transform.localScale.y > 8f || IsBoostActive)) //NodeSelect Logic here
             {
                 if (IsBoostActive)
                 {
@@ -138,10 +137,6 @@ namespace Game
                 Camera.main.transform.DOMove(transform.position + CamOffset, GameCore.TransmissionDuration);
                 GameCore.Instance.State = GameState.Transmitting;
                 NextCubeType = cube.Type;
-                if (cube.Type == ZCubeType.Goal)
-                {
-                    Debug.Log("Yeeeey");
-                }
             }
         }
 
@@ -150,7 +145,7 @@ namespace Game
             var controller = FindObjectOfType<CubesController>();
             if (controller != null)
             {
-                var transmissives = controller.Cubes.Where(x => x.Type == ZCubeType.Transmissive || x.Type == ZCubeType.Goal).ToList();
+                var transmissives = controller.Cubes.Where(x => x.Type == (ZCubeType)Boosts.First() || x.Type == ZCubeType.Goal).ToList();
                 var selectedCubeindex = 0;
                 var distance = float.MaxValue;
                 for (int i = 0; i < transmissives.Count; i++) //TODO: Distance for goal node
@@ -169,7 +164,7 @@ namespace Game
                 if (--_boostSteps == 0 && !_debugboost) 
                 {
                     IsBoostActive = false;
-                    ConsecutiveBoostCount = 0;
+                    Boosts.Clear();
                 }
             }
         }

@@ -76,7 +76,7 @@ namespace Game
                 }
                 cubeController.Timer = 0;
                 State = GameState.AwaitingTransmission;
-                Player.ConsecutiveBoostCount = 0;
+                Player.Boosts.Clear();
                 Player.CalculateGoalPosition();
             }
         }

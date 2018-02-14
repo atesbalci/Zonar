@@ -1,5 +1,4 @@
 ﻿using System;
-using UniRx;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -8,10 +7,11 @@ namespace Game
     public enum ZCubeType
     {
         Basic,
-        Transmissive,
         Player,
-        Boost,
         Goal,
+        Transmissive1,
+        Transmissive2,
+        Transmissive3
     }
 
     public class ZCube : MonoBehaviour
@@ -19,16 +19,15 @@ namespace Game
         public const float MaxHeight = 10f;
         public const float InactiveColorPrecision = 0.2f;
         public const float ColorPrecision = 0.025f;
-        public static readonly Color DefaultIdleColor = new Color(0.07f, 0.07f, 0.07f);
         public static readonly Color DefaultColor = new Color(0.71f, 0.71f, 0.71f);
-        public static Color IdleColor = DefaultIdleColor;
+        public static readonly Color IdleColor = new Color(0.07f, 0.07f, 0.07f);
 
-        public ZCubeType Type { get; set; }
         public float RadialDistance { get; private set; }
         public Vector3 LocalPos { get; private set; }
 
         private Renderer _rend;
         private MaterialPropertyBlock _properties;
+        private ZCubeType _type;
 
         public void Init()
         {
@@ -43,7 +42,7 @@ namespace Game
             Vector4 col;
             if (!Mathf.Approximately(transform.localScale.y, 1f))
             {
-                col = Color.Lerp(IdleColor, GetCubeColor() * DefaultColor, (transform.localScale.y - 1f) / (MaxHeight - 1f));
+                col = Color.Lerp(IdleColor, GetCubeColor(Type) * DefaultColor, (transform.localScale.y - 1f) / (MaxHeight - 1f));
                 col /= ColorPrecision;
                 col = new Vector4(Mathf.Round(col.x), Mathf.Round(col.y), Mathf.Round(col.z), Mathf.Round(col.w));
                 col *= ColorPrecision;
@@ -57,56 +56,36 @@ namespace Game
             _rend.SetPropertyBlock(_properties);
         }
 
-        public Color GetCubeColor()
+        public static Color GetCubeColor(ZCubeType type)
         {
-            var t = Type;
-            if (Type == ZCubeType.Player) //bad practice 
+            if (type == ZCubeType.Player) //bad practice 
             {
-                t = GameCore.Instance.Player.CurrentCubeType;
+                type = GameCore.Instance.Player.CurrentCubeType;
             }
-            switch (t)
+            switch (type)
             {
-                case ZCubeType.Basic:
-                return Color.clear;
-                case ZCubeType.Transmissive:
-                return Color.blue;
-                case ZCubeType.Boost:
-                return Color.magenta;
                 case ZCubeType.Goal:
-                return Color.red;
+                    return Color.green;
+                case ZCubeType.Transmissive1:
+                    return new Color(1f, 0.34f, 1f);
+                case ZCubeType.Transmissive2:
+                    return new Color(1f, 0.71f, 0f);
+                case ZCubeType.Transmissive3:
+                    return new Color(0f, 1f, 0.82f);
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    return Color.clear;
             }
         }
 
-        public void SetCubeType()
+        public ZCubeType Type
         {
-            if (Type != ZCubeType.Player)
+            get { return _type; }
+            set
             {
-                if ((GameCore.Instance.Player.GoalPosition - transform.position).magnitude < 0.5f)
-                {
-                    Type = ZCubeType.Goal;
-                    Debug.Log(transform.TransformPoint(Vector3.zero));
-                }
-                else
-                {
-                    var randy = Random.Range(0f, 100f);
-                    if (randy < Mathf.Clamp(2 - (GameCore.Instance.Player.Level - 1) * 0.5f, 0.5f, 100f)) // TODO: boost must be far from player 
-                    {
-                        Type = ZCubeType.Boost;
-                    }
-                    else if (randy < Mathf.Clamp(5 - (GameCore.Instance.Player.Level - 1) * 0.5f, 2f, 100f))
-                    {
-                        Type = ZCubeType.Transmissive;
-                    }
-                    else
-                    {
-                        Type = ZCubeType.Basic;
-                    }
-                }
+                _type = value;
+                _properties.SetColor("_OverrideColor", GetCubeColor(Type));
+                _rend.SetPropertyBlock(_properties);
             }
-            _properties.SetColor("_OverrideColor", GetCubeColor());
-            _rend.SetPropertyBlock(_properties);
         }
     }
 }

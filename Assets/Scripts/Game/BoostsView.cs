@@ -17,7 +17,7 @@ namespace Game
 
             MessageBroker.Default.Receive<GameStateChangeEvent>().Subscribe(ev =>
             {
-                if (ev.State == GameState.Menu || ev.State == GameState.GameOver || ev.State == GameState.LevelCompleted)
+                if (ev.State == GameState.Menu || ev.State == GameState.LevelCompleted)
                 {
                     foreach (var renderer1 in Renderers)
                     {
@@ -36,10 +36,13 @@ namespace Game
 
         private void Update()
         {
+            var boosts = GameCore.Instance.Player.Boosts;
             for (var i = 0; i < Renderers.Length; i++)
             {
+                var col = i < boosts.Count ?
+                    ZCube.GetCubeColor((ZCubeType)boosts[i]) : new Color(0.33f, 0.33f, 0.33f);
                 var rend = Renderers[i];
-                rend.material.color = Color.Lerp(rend.material.color, GameCore.Instance.Player.ConsecutiveBoostCount > i ? Color.magenta : Color.Lerp(Color.black, Color.magenta, 0.2f), Time.deltaTime * 10f);
+                rend.material.color = Color.Lerp(rend.material.color, col, Time.deltaTime * 10f);
             }
         }
     }

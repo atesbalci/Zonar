@@ -8,19 +8,22 @@ namespace Game
 {
     public class CubesController : MonoBehaviour
     {
-        public List<ZCube> Cubes;
         public const float Gap = 1.1f;
-        public GameObject CubePrefab;
         public const int WaveRadius = 1011;
+        public const float TimerLimit = 3.5f;
         private const float RingWidth = 1f;
         private const float Speed = 2.5f;
         private const float ScreenBoundTolerance = 100f;
-
-        private GameObject _cubeParent;
+        private const float MaxRange = 9.5f; //TODO: Perhaps actually calculate this?
 
         public float Timer;
+        public List<ZCube> Cubes;
+        public GameObject CubePrefab;
+
         private Tweener[] _tweeners;
         private float _curVisibility;
+        private GameObject _cubeParent;
+        private int _amountOfCubesWithinRange;
 
         private void Start()
         {
@@ -115,12 +118,12 @@ namespace Game
                         cube.transform.SetParent(_cubeParent.transform);
                         Cubes.Add(cube);
                         cube.Init();
-                        cube.SetCubeType();
                     }
                 }
             }
-            Cubes.First(x => Mathf.Approximately(Vector3.Distance(x.transform.position, Vector3.zero), 0f)).Type = ZCubeType.Player;
-            Debug.Log(Cubes.Count);
+            Cubes.First(x => Mathf.Approximately(Vector3.Distance(x.transform.localPosition, Vector3.zero), 0f)).Type = ZCubeType.Player;
+            _amountOfCubesWithinRange = Cubes.Count(cube => cube.transform.localPosition.magnitude < MaxRange);
+            SetUserCube(Vector3.zero);
         }
 
         private void Update()
@@ -135,7 +138,7 @@ namespace Game
 
             if (state == GameState.AwaitingTransmission)
             {
-                if (Timer < 3.5f)
+                if (Timer < TimerLimit)
                 {
                     Timer += Time.deltaTime;
                 }
@@ -156,7 +159,11 @@ namespace Game
             foreach (var cube in Cubes)
             {
                 height = 1f - Mathf.PerlinNoise(cube.LocalPos.x * 0.5f + globalTime, cube.LocalPos.z * 0.5f + globalTime);
-                if (cube.Type == ZCubeType.Player || cube.Type == ZCubeType.Goal)
+                if (cube.Type == ZCubeType.Player)
+                {
+                    height = ZCube.MaxHeight * (1f - Timer / TimerLimit);
+                }
+                else if (cube.Type == ZCubeType.Goal)
                 {
                     height = ZCube.MaxHeight;
                 }
@@ -181,9 +188,48 @@ namespace Game
         {
             _cubeParent.transform.position = pos;
             Timer = 0f;
+
+            //Begin type placement process
+            var typeMap = new ZCubeType[_amountOfCubesWithinRange];
+            var transmissiveTypeAmt = (ZCubeType.Transmissive3 - ZCubeType.Transmissive1) + 1;
+            for (var i = 0; i < transmissiveTypeAmt; i++)
+            {
+                var amt = Random.Range(1, Mathf.Max(1,
+                    Mathf.RoundToInt(((float)_amountOfCubesWithinRange / transmissiveTypeAmt) * 0.05f)));
+                for (var j = 0; j < amt; j++)
+                {
+                    int rand;
+                    do
+                    {
+                        rand = Random.Range(0, _amountOfCubesWithinRange);
+                    } while (typeMap[rand] != ZCubeType.Basic);
+                    typeMap[rand] = ZCubeType.Transmissive1 + i;
+                }
+            }
+
+            //Set the types
+            var inRangeIndex = 0;
+            const float rangeSq = MaxRange * MaxRange; //Haram
             foreach (var zCube in Cubes) //set other cubes
             {
-                zCube.SetCubeType();
+                if (zCube.Type == ZCubeType.Player)
+                {
+                    continue;
+                }
+                if ((GameCore.Instance.Player.GoalPosition - transform.position).magnitude < 0.5f)
+                {
+                    zCube.Type = ZCubeType.Goal;
+                    continue;
+                }
+                if (zCube.transform.localPosition.sqrMagnitude < rangeSq)
+                {
+                    zCube.Type = typeMap[inRangeIndex];
+                    inRangeIndex++;
+                }
+                else
+                {
+                    zCube.Type = ZCubeType.Basic;
+                }
             }
         }
     }
