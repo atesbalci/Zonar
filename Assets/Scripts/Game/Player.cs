@@ -145,7 +145,7 @@ namespace Game
             var controller = FindObjectOfType<CubesController>();
             if (controller != null)
             {
-                var transmissives = controller.Cubes.Where(x => x.Type == (ZCubeType)Boosts.First() || x.Type == ZCubeType.Goal).ToList();
+                var transmissives = controller.Cubes.Where(x => (x.Type >= ZCubeType.Transmissive1 && x.Type <= ZCubeType.Transmissive3) || x.Type == ZCubeType.Goal).ToList();
                 var selectedCubeindex = 0;
                 var distance = float.MaxValue;
                 for (int i = 0; i < transmissives.Count; i++) //TODO: Distance for goal node

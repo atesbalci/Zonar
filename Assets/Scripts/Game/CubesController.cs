@@ -15,6 +15,7 @@ namespace Game
         private const float Speed = 2.5f;
         private const float ScreenBoundTolerance = 100f;
         private const float MaxRange = 9.5f; //TODO: Perhaps actually calculate this?
+        private const float MinRange = 2.25f;
 
         public float Timer;
         public List<ZCube> Cubes;
@@ -122,7 +123,9 @@ namespace Game
                 }
             }
             Cubes.First(x => Mathf.Approximately(Vector3.Distance(x.transform.localPosition, Vector3.zero), 0f)).Type = ZCubeType.Player;
-            _amountOfCubesWithinRange = Cubes.Count(cube => cube.transform.localPosition.magnitude < MaxRange);
+            _amountOfCubesWithinRange = Cubes.Count(cube =>
+                cube.transform.localPosition.magnitude > MinRange
+                && cube.transform.localPosition.magnitude < MaxRange);
             SetUserCube(Vector3.zero);
         }
 
@@ -194,8 +197,8 @@ namespace Game
             var transmissiveTypeAmt = (ZCubeType.Transmissive3 - ZCubeType.Transmissive1) + 1;
             for (var i = 0; i < transmissiveTypeAmt; i++)
             {
-                var amt = Random.Range(1, Mathf.Max(1,
-                    Mathf.RoundToInt(((float)_amountOfCubesWithinRange / transmissiveTypeAmt) * 0.05f)));
+                var amt = Random.Range(1, Mathf.Max(1, Mathf.RoundToInt(
+                    ((float)_amountOfCubesWithinRange / transmissiveTypeAmt) * 0.04f)));
                 for (var j = 0; j < amt; j++)
                 {
                     int rand;
@@ -209,19 +212,22 @@ namespace Game
 
             //Set the types
             var inRangeIndex = 0;
-            const float rangeSq = MaxRange * MaxRange; //Haram
+            const float maxRangeSq = MaxRange * MaxRange;
+            const float minRangeSq = MinRange * MinRange;
             foreach (var zCube in Cubes) //set other cubes
             {
                 if (zCube.Type == ZCubeType.Player)
                 {
                     continue;
                 }
-                if ((GameCore.Instance.Player.GoalPosition - transform.position).magnitude < 0.5f)
+                if ((GameCore.Instance.Player.GoalPosition - zCube.transform.position).magnitude < 0.5f)
                 {
                     zCube.Type = ZCubeType.Goal;
                     continue;
                 }
-                if (zCube.transform.localPosition.sqrMagnitude < rangeSq)
+
+                var distSq = zCube.transform.localPosition.sqrMagnitude;
+                if (distSq > minRangeSq && distSq < maxRangeSq)
                 {
                     zCube.Type = typeMap[inRangeIndex];
                     inRangeIndex++;
