@@ -10,7 +10,7 @@ namespace Game
     {
         public const float Gap = 1.1f;
         public const int WaveRadius = 1011;
-        public const float TimerLimit = 3.5f;
+        public const float TimerLimit = 4f;
         private const float RingWidth = 1f;
         private const float Speed = 2.5f;
         private const float ScreenBoundTolerance = 100f;
@@ -131,6 +131,9 @@ namespace Game
 
         private void Update()
         {
+            var level = GameCore.Instance.Player.Level;
+            var globalTime = Time.time;
+            var curSpeed = (Speed + level * 0.25f) * GameCore.Instance.GetSonarSpeedMultiplier();
             var state = GameCore.Instance.State;
             var newVisibility = Mathf.Clamp01(_curVisibility + (state == GameState.Transmitting ? -1f : 1f) * Time.deltaTime * 10f);
             if (!Mathf.Approximately(newVisibility, _curVisibility))
@@ -141,7 +144,7 @@ namespace Game
 
             if (state == GameState.AwaitingTransmission)
             {
-                if (Timer < TimerLimit)
+                if (Timer < TimerLimit * (Speed / curSpeed))
                 {
                     Timer += Time.deltaTime;
                 }
@@ -150,19 +153,17 @@ namespace Game
                     GameCore.Instance.State = GameState.GameOver;
                 }
             }
-            else if (state != GameState.LevelCompleted)
+            else if (state != GameState.LevelCompleted && state != GameState.Menu)
             {
                 return;
             }
             
             // ReSharper disable once TooWideLocalVariableScope
             float height;
-            var level = GameCore.Instance.Player.Level;
-            var globalTime = Time.time;
             foreach (var cube in Cubes)
             {
                 height = 1f - Mathf.PerlinNoise(cube.LocalPos.x * 0.5f + globalTime, cube.LocalPos.z * 0.5f + globalTime);
-                if (cube.Type == ZCubeType.Player)
+                if (cube.Type == ZCubeType.Player && state != GameState.Menu)
                 {
                     height = ZCube.MaxHeight * (1f - Timer / TimerLimit);
                 }
@@ -174,7 +175,7 @@ namespace Game
                 {
                     if (state == GameState.AwaitingTransmission)
                     {
-                        height = CalculateHeight(cube.RadialDistance, Timer, Speed + level * 0.25f,
+                        height = CalculateHeight(cube.RadialDistance, Timer, curSpeed,
                             RingWidth, height, ZCube.MaxHeight);
                     }
                 }

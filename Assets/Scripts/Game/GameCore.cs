@@ -91,6 +91,11 @@ namespace Game
             return GetTransmissionDuration(0.1f, 0.01f, 0.02f);
         }
 
+        public float GetSonarSpeedMultiplier()
+        {
+            return 1f + Player.Boosts.Count * 0.25f;
+        }
+
         private static float GetTransmissionDuration(float start, float levelDecrease, float minDuration)
         {
             return Mathf.Clamp(start - Instance.Player.Level * levelDecrease, minDuration, 1f);

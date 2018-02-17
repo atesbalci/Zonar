@@ -97,6 +97,7 @@ namespace Game
                         {
                             continue;
                         }
+                        selectedCube.LeaveGhost();
                         if (selectedCube.Type >= ZCubeType.Transmissive1
                             && selectedCube.Type <= ZCubeType.Transmissive3) //Set boost count
                         {
@@ -121,7 +122,7 @@ namespace Game
 
         private void NormalMove(ZCube cube)
         {
-            if (((cube.Type >= ZCubeType.Transmissive1 && cube.Type <= ZCubeType.Transmissive3) || cube.Type == ZCubeType.Goal) && (cube.transform.localScale.y > 8f || IsBoostActive)) //NodeSelect Logic here
+            if (IsBoostActive || (((cube.Type >= ZCubeType.Transmissive1 && cube.Type <= ZCubeType.Transmissive3) || cube.Type == ZCubeType.Goal) && (cube.transform.localScale.y > 8f || IsBoostActive)))//NodeSelect Logic here
             {
                 if (IsBoostActive)
                 {
@@ -145,21 +146,21 @@ namespace Game
             var controller = FindObjectOfType<CubesController>();
             if (controller != null)
             {
-                var transmissives = controller.Cubes.Where(x => (x.Type >= ZCubeType.Transmissive1 && x.Type <= ZCubeType.Transmissive3) || x.Type == ZCubeType.Goal).ToList();
                 var selectedCubeindex = 0;
                 var distance = float.MaxValue;
-                for (int i = 0; i < transmissives.Count; i++) //TODO: Distance for goal node
+                for (int i = 0; i < 50; i++)
                 {
-                    var zCube = transmissives[i];
+                    var no = Random.Range(0, controller.Cubes.Count);
+                    var zCube = controller.Cubes[no];
                     var distanceToGoal = (zCube.transform.position - GoalPosition).magnitude;
                     var distanceFromPlayer = (zCube.transform.position - transform.position).magnitude;
                     if (distanceToGoal < distance && distanceFromPlayer < GameCore.MaxBoostLeapDistance)
                     {
-                        selectedCubeindex = i;
+                        selectedCubeindex = no;
                         distance = distanceToGoal;
                     }
                 }
-                NormalMove(transmissives[selectedCubeindex]);
+                NormalMove(controller.Cubes.FirstOrDefault(x => x.Type == ZCubeType.Goal) ?? controller.Cubes[selectedCubeindex]);
 
                 if (--_boostSteps == 0 && !_debugboost) 
                 {

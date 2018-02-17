@@ -1,4 +1,5 @@
 ﻿using System;
+using DG.Tweening;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -75,6 +76,18 @@ namespace Game
                 default:
                     return Color.clear;
             }
+        }
+
+        public void LeaveGhost()
+        {
+            const float duration = 0.5f;
+            var ghost = Instantiate(_rend, _rend.transform.position, _rend.transform.rotation);
+            ghost.transform.DOScale(transform.localScale * 4f, duration);
+            ghost.material.shader = Shader.Find("Unlit/ColorTransparent");
+            var col = GetCubeColor(Type);
+            ghost.material.color = col;
+            ghost.material.DOColor(new Color(col.r, col.g, col.b, 0f), duration / 2f)
+                .SetDelay(duration / 2f).OnComplete(() => Destroy(ghost.gameObject));
         }
 
         public ZCubeType Type
