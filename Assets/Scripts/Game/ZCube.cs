@@ -85,6 +85,7 @@ namespace Game
             ghost.transform.DOScale(transform.localScale * 4f, duration);
             ghost.material.shader = Shader.Find("Unlit/ColorTransparent");
             var col = GetCubeColor(Type);
+            col.a = 0.5f;
             ghost.material.color = col;
             ghost.material.DOColor(new Color(col.r, col.g, col.b, 0f), duration / 2f)
                 .SetDelay(duration / 2f).OnComplete(() => Destroy(ghost.gameObject));

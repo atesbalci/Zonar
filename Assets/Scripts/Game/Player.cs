@@ -101,12 +101,9 @@ namespace Game
                         if (selectedCube.Type >= ZCubeType.Transmissive1
                             && selectedCube.Type <= ZCubeType.Transmissive3) //Set boost count
                         {
+                            if (Boosts.Count > 0 && Boosts.First() != (int) selectedCube.Type)
+                                Boosts.Clear();
                             Boosts.Add((int)selectedCube.Type);
-                            if (Boosts.Distinct().Count() > 1)
-                            {
-                                GameCore.Instance.State = GameState.GameOver;
-                                break;
-                            }
                         }
                         if (Boosts.Count == BoostLimit)
                         {
