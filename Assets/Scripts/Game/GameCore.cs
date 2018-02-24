@@ -26,6 +26,7 @@ namespace Game
         public static float MaxBoostLeapDistance = 20f;
 
         public Player Player { get; set; }
+        public float RemainingTime { get; set; }
 
         public GameState State
         {
@@ -42,6 +43,10 @@ namespace Game
                     {
                         State = GameState.AwaitingTransmission;
                     });
+                }
+                else if (_state != GameState.Transmitting && value == GameState.AwaitingTransmission)
+                {
+                    RemainingTime = 30f - Player.Level * 4f;
                 }
                 _state = value;
                 MessageBroker.Default.Publish(new GameStateChangeEvent { State = value });

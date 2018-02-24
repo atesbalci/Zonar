@@ -11,26 +11,36 @@ namespace Game
         public const float Gap = 1.1f;
         public const int WaveRadius = 1011;
         public const float TimerLimit = 4f;
+
         private const float RingWidth = 1f;
         private const float Speed = 2.5f;
         private const float ScreenBoundTolerance = 100f;
         private const float MaxRange = 9.5f; //TODO: Perhaps actually calculate this?
         private const float MinRange = 2.25f;
 
-        public float Timer;
-        public List<ZCube> Cubes;
+        public Color MainColor;
+        public Color IdleColor;
+        public Color WarningBlinkColor;
+        [Space(10)]
         public GameObject CubePrefab;
+
+        public float Timer { get; set; }
+        public List<ZCube> Cubes { get; private set; }
 
         private Tweener[] _tweeners;
         private float _curVisibility;
         private GameObject _cubeParent;
         private int _amountOfCubesWithinRange;
+        private Color _curMainColor;
 
         private void Start()
         {
+            _curMainColor = MainColor;
             Shader.SetGlobalFloat("_MIN", 1f);
             Shader.SetGlobalFloat("_MAX", ZCube.MaxHeight);
             Shader.SetGlobalFloat("_MULTIPLIER", 1f);
+            Shader.SetGlobalColor("_MAIN", _curMainColor);
+            Shader.SetGlobalColor("_IDLE", IdleColor);
             Application.targetFrameRate = 60;
             Tile();
             Vector3 pos = Vector3.zero;
@@ -152,6 +162,9 @@ namespace Game
                 {
                     GameCore.Instance.State = GameState.GameOver;
                 }
+                GameCore.Instance.RemainingTime -= Time.deltaTime;
+                if (GameCore.Instance.RemainingTime <= 0f)
+                    GameCore.Instance.State = GameState.GameOver;
             }
             else if (state != GameState.LevelCompleted && state != GameState.Menu)
             {
@@ -181,6 +194,14 @@ namespace Game
                 }
                 cube.transform.localScale = new Vector3(1f, height, 1f);
             }
+
+            var remainingTime = GameCore.Instance.RemainingTime;
+            var prog = Mathf.Pow(15f - remainingTime, 2) * 0.25f;
+            while (prog > 2f)
+                prog -= 2f;
+            _curMainColor = remainingTime < 15f ?
+                (Color)Vector4.MoveTowards(MainColor, WarningBlinkColor, prog > 1f ? 2f - prog : prog) : MainColor;
+            Shader.SetGlobalColor("_MAIN", _curMainColor);
         }
 
         private static float CalculateHeight(float distance, float time, float speed, float width, float min, float max)

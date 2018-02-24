@@ -1,7 +1,5 @@
 Shader "Zonar/DiffuseCube" {
 Properties {
-    _Color("Main Color", Color) = (1, 1, 1, 1)
-	_IdleColor("Idle Color", Color) = (0, 0, 0, 1)
 	[PreRendererData]_OverrideColor("Override Color", Color) = (0, 0, 0, 0)
 }
 SubShader {
@@ -13,9 +11,10 @@ SubShader {
 
 	uniform float _MIN;
 	uniform float _MAX;
-	uniform float _MULTIPLIER = 1.0f;
-	float4 _Color;
-	float4 _IdleColor;
+	uniform float _MULTIPLIER;
+	uniform float4 _MAIN;
+	uniform float4 _IDLE;
+
 	float4 _OverrideColor;
 
 	struct Input {
@@ -23,8 +22,8 @@ SubShader {
 	};
 
 	void surf (Input IN, inout SurfaceOutput o) {
-		o.Albedo = lerp(_MULTIPLIER * _IdleColor.rgb,
-		lerp(_Color.rgb, _OverrideColor.rgb, clamp(min(_OverrideColor.a, (IN.worldPos.y - _MIN)), 0.0f, 1.0f)),
+		o.Albedo = lerp(_MULTIPLIER * _IDLE.rgb,
+		lerp(_MAIN.rgb, _OverrideColor.rgb, clamp(min(_OverrideColor.a, (IN.worldPos.y - _MIN)), 0.0f, 1.0f)),
 		(IN.worldPos.y - _MIN) / (_MAX - _MIN));
 	}
 	ENDCG

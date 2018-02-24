@@ -97,7 +97,6 @@ namespace Game
                         {
                             continue;
                         }
-                        selectedCube.LeaveGhost();
                         if (selectedCube.Type >= ZCubeType.Transmissive1
                             && selectedCube.Type <= ZCubeType.Transmissive3) //Set boost count
                         {
@@ -110,6 +109,8 @@ namespace Game
                             IsBoostActive = true;
                             _boostSteps = 3 + Level; //TODO: change later
                         }
+                        if(selectedCube.Type != ZCubeType.Player)
+                            selectedCube.LeaveGhost();
                         NormalMove(selectedCube);
                         break;
                     }
