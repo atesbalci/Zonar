@@ -28,19 +28,19 @@ namespace Game
         public List<ZCube> Cubes { get; private set; }
 
         private Tweener[] _tweeners;
-        private float _curVisibility;
         private GameObject _cubeParent;
         private int _amountOfCubesWithinRange;
         private Color _curMainColor;
+        private Color _curIdleColor;
 
         private void Start()
         {
             _curMainColor = MainColor;
+            _curIdleColor = IdleColor;
             Shader.SetGlobalFloat("_MIN", 1f);
             Shader.SetGlobalFloat("_MAX", ZCube.MaxHeight);
-            Shader.SetGlobalFloat("_MULTIPLIER", 1f);
             Shader.SetGlobalColor("_MAIN", _curMainColor);
-            Shader.SetGlobalColor("_IDLE", IdleColor);
+            Shader.SetGlobalColor("_IDLE", _curIdleColor);
             Application.targetFrameRate = 60;
             Tile();
             Vector3 pos = Vector3.zero;
@@ -145,11 +145,11 @@ namespace Game
             var globalTime = Time.time;
             var curSpeed = (Speed + level * 0.25f) * GameCore.Instance.GetSonarSpeedMultiplier();
             var state = GameCore.Instance.State;
-            var newVisibility = Mathf.Clamp01(_curVisibility + (state == GameState.Transmitting ? -1f : 1f) * Time.deltaTime * 10f);
-            if (!Mathf.Approximately(newVisibility, _curVisibility))
+            var newIdle = Vector4.MoveTowards(_curIdleColor, state == GameState.Transmitting ? Color.black : IdleColor, Time.deltaTime * 2f);
+            if (Vector4.Distance(newIdle, _curIdleColor) > 0.001f)
             {
-                _curVisibility = newVisibility;
-                Shader.SetGlobalFloat("_MULTIPLIER", _curVisibility);
+                _curIdleColor = newIdle;
+                Shader.SetGlobalColor("_IDLE", _curIdleColor);
             }
 
             if (state == GameState.AwaitingTransmission)

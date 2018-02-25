@@ -11,7 +11,6 @@ SubShader {
 
 	uniform float _MIN;
 	uniform float _MAX;
-	uniform float _MULTIPLIER;
 	uniform float4 _MAIN;
 	uniform float4 _IDLE;
 
@@ -22,7 +21,7 @@ SubShader {
 	};
 
 	void surf (Input IN, inout SurfaceOutput o) {
-		o.Albedo = lerp(_MULTIPLIER * _IDLE.rgb,
+		o.Albedo = lerp(_IDLE.rgb,
 		lerp(_MAIN.rgb, _OverrideColor.rgb, clamp(min(_OverrideColor.a, (IN.worldPos.y - _MIN)), 0.0f, 1.0f)),
 		(IN.worldPos.y - _MIN) / (_MAX - _MIN));
 	}
