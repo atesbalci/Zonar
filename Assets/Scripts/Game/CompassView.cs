@@ -1,4 +1,5 @@
-﻿using UniRx;
+﻿using System.Collections.Generic;
+using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,8 +11,13 @@ namespace Game
         public Image Bottom;
         public Image Left;
         public Image Right;
+
+        [Space(10)]
+        public AnimationCurve BlinkCurve;
+        public float BlinkSpeedMultiplier;
         
         private Camera _cam;
+        private Dictionary<Image, float> _alphas;
 
         private void Start()
         {
@@ -28,6 +34,18 @@ namespace Game
                     gameObject.SetActive(true);
                 }
             });
+            _alphas = new Dictionary<Image, float>
+            {
+                { Top, 0f },
+                { Bottom, 0f },
+                { Left, 0f },
+                { Right, 0f },
+            };
+        }
+
+        private void Reset()
+        {
+            BlinkSpeedMultiplier = 1f;
         }
 
         private void Update()
@@ -46,17 +64,18 @@ namespace Game
             ratios.x = offSetFromScr.x / (Mathf.Abs(offSetFromScr.x) + Mathf.Abs(offSetFromScr.y));
             ratios.y = offSetFromScr.y / (Mathf.Abs(offSetFromScr.x) + Mathf.Abs(offSetFromScr.y));
 
-            SetImageAlpha(Top, ratios.y);
-            SetImageAlpha(Bottom, -ratios.y);
-            SetImageAlpha(Left, -ratios.x);
-            SetImageAlpha(Right, ratios.x);
-        }
 
-        private static void SetImageAlpha(Image image, float alpha)
-        {
-            var col = image.color;
-            col.a = alpha;
-            image.color = col;
+            _alphas[Top] = ratios.y;
+            _alphas[Bottom] = -ratios.y;
+            _alphas[Left] = -ratios.x;
+            _alphas[Right] = ratios.x;
+
+            foreach (var kvp in _alphas)
+            {
+                var col = kvp.Key.color;
+                col.a = kvp.Value * BlinkCurve.Evaluate(Time.time * BlinkSpeedMultiplier);
+                kvp.Key.color = col;
+            }
         }
     }
 }
